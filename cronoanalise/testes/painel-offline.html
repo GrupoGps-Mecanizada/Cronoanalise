@@ -29,7 +29,9 @@
   document.querySelectorAll('#produtSubtabs .pill').forEach(b => b.click());
   document.querySelectorAll('.crew-item').forEach(b => b.click());   // inclusive a do Motorista no Aspirador
   if (!document.getElementById('horarioChart').textContent.includes('23h–07h')) throw new Error('23h às 07h fora do gráfico por horário');
-  document.querySelector('#tlModo [data-modo="grupo"]').click();
+  if (!document.querySelector('#placar .placar-item')) throw new Error('placar vazio');
+  if (!document.querySelector('.seg-bloco')) throw new Error('modo simples sem blocos');
+  document.querySelector('#tlModo [data-modo="detalhado"]').click();
   const comCodigo = [...document.querySelectorAll('.seg-grupo')].filter(x => /^\d+$/.test(x.textContent));
   if (!comCodigo.length) throw new Error('modo Atividades sem números nas faixas');
   if (!document.querySelector('#resumoEquipe .rs-papel')) throw new Error('Resumo da equipe vazio');

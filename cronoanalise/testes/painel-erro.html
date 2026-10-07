@@ -13,7 +13,7 @@
   const pagina = await (await fetch('../index.html?' + Date.now())).text();
   const doc = new DOMParser().parseFromString(pagina, 'text/html');
   document.getElementById('alvo').append(doc.getElementById('tela-painel'));
-  Crono.banco.listarRegistros = async () => [{ data: '2026-10-01' }];
+  Crono.banco.listarRegistros = async () => [{ data: '2026-10-01', origem: 'folha' }];
   Crono.calcularPainel = () => { throw new Error('falha de teste'); };
   await Crono.painel.iniciar();
   const estado = document.getElementById('painelEstado');

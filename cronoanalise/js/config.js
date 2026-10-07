@@ -75,16 +75,16 @@
   // Cada código pertence a um grupo só; o grupo segue a classificação do código.
   const faixa = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
   const GRUPOS = [
-    { chave: 'operacao', nome: 'Operação', cls: PROD, cor: '#1F9D55',
+    { chave: 'operacao', nome: 'Operação', rotulo: 'Trabalhando', cls: PROD, cor: '#1F9D55',
       codigos: [1, 32, 33, 34, 35, 36, 37, 42, 43, 50, 57, 64, 66] },
-    { chave: 'preparacao', nome: 'Preparação e apoio', cls: NEC, cor: '#2F6FB2',
+    { chave: 'preparacao', nome: 'Preparação e apoio', rotulo: 'Preparando', cls: NEC, cor: '#2F6FB2',
       codigos: [7, 8, 13, 15, 16, 18, 30, 31, 38, 39, 40, 41, ...faixa(45, 49), 55, 56, ...faixa(58, 62), 65] },
-    { chave: 'seguranca', nome: 'Segurança e documentação', cls: NEC, cor: '#7B5CC4', codigos: [6, 10, 11, 14, 20] },
-    { chave: 'logistica', nome: 'Logística (trajeto, abastecimento, descarte)', cls: NEC, cor: '#C98A12', codigos: [3, 9, 12, 21, 67, 69] },
-    { chave: 'pausas', nome: 'Pausas e pessoal', cls: NEC, cor: '#7A8794', codigos: [2, 4, 5, 17, 19] },
-    { chave: 'esperas', nome: 'Esperas e perdas', cls: IMP, cor: '#C8372D', codigos: [...faixa(22, 29), 44, 63, 68] }
+    { chave: 'seguranca', nome: 'Segurança e documentação', rotulo: 'Segurança', cls: NEC, cor: '#7B5CC4', codigos: [6, 10, 11, 14, 20] },
+    { chave: 'logistica', nome: 'Logística (trajeto, abastecimento, descarte)', rotulo: 'Deslocando', cls: NEC, cor: '#C98A12', codigos: [3, 9, 12, 21, 67, 69] },
+    { chave: 'pausas', nome: 'Pausas e pessoal', rotulo: 'Pausa', cls: NEC, cor: '#7A8794', codigos: [2, 4, 5, 17, 19] },
+    { chave: 'esperas', nome: 'Esperas e perdas', rotulo: 'Parado esperando', cls: IMP, cor: '#C8372D', codigos: [...faixa(22, 29), 44, 63, 68] }
   ];
-  const OUTROS = { chave: 'outros', nome: 'Sem código', cls: null, cor: '#9AA5B1', codigos: [] };
+  const OUTROS = { chave: 'outros', nome: 'Sem código', rotulo: 'Sem código', cls: null, cor: '#9AA5B1', codigos: [] };
   const grupoPorCodigo = new Map(GRUPOS.flatMap(g => g.codigos.map(c => [c, g])));
 
   const config = {
@@ -93,6 +93,8 @@
     CLS_ORDER: [PROD, NEC, IMP],
     DESC,
     GRUPOS,
+    // Placar "tempo trabalhando": verde a partir de 50%, amarelo de 30% a 49%, vermelho abaixo de 30%.
+    PLACAR: { verde: 50, amarelo: 30 },
     grupoDe: cod => grupoPorCodigo.get(Number(cod)) || OUTROS,
     classe: cod => PRODUZINDO.has(Number(cod)) ? PROD : IMPRODUTIVO.has(Number(cod)) ? IMP : NEC,
     EQUIP: {

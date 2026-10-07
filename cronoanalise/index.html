@@ -42,6 +42,11 @@
 
 <section class="tela-app" id="tela-painel">
 <div class="wrap">
+  <div class="base-sel" id="baseSel" role="group" aria-label="Base de dados do painel">
+    <span>Base de dados:</span>
+    <a class="pill" data-base="folha" href="./#painel">Folhas novas (a partir de 06/10)</a>
+    <a class="pill" data-base="planilha_antiga" href="./?base=antiga#painel">Planilha antiga (09 a 22/09)</a>
+  </div>
   <div class="estado" id="painelEstado">Carregando…</div>
   <div class="tabs" id="topTabs">
     <button data-view="dashboard" class="tab active">Dashboard</button>
@@ -107,20 +112,21 @@
               <div><h2 class="card-title" id="crewTitle" style="margin-bottom:2px;"></h2><div class="card-sub" id="crewMeta" style="margin-bottom:0;"></div></div>
               <div class="tl-acoes">
                 <div class="pills" id="tlModo" role="group" aria-label="Modo da linha do tempo">
-                  <button type="button" class="pill active" data-modo="cls">Produtividade</button>
-                  <button type="button" class="pill" data-modo="grupo">Atividades</button>
+                  <button type="button" class="pill active" data-modo="simples">Simples</button>
+                  <button type="button" class="pill" data-modo="detalhado">Detalhado</button>
                 </div>
                 <span class="status-note" id="crewStatus"></span>
               </div>
             </div>
+            <div class="placar" id="placar"></div>
             <div class="tl-wrap"><div class="tl-inner" id="tlInner"></div></div>
-            <div class="legend-row" id="legendaCls">
+            <div class="legend-row" id="legendaCls" hidden>
               <span><span class="dot" style="background:var(--good)"></span>Produzindo</span>
               <span><span class="dot" style="background:var(--warn)"></span>Improdutivo necessário</span>
               <span><span class="dot" style="background:var(--bad)"></span>Improdutivo</span>
               <span><span class="dot" style="background:var(--text-3)"></span>Não classificado</span>
             </div>
-            <div class="legend-row" id="legendaGrupo" hidden></div>
+            <div class="legend-row" id="legendaGrupo"></div>
           </div>
           <div class="card card-pad">
             <div class="card-title">Resumo da equipe</div>

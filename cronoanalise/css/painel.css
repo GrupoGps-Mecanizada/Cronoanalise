@@ -299,3 +299,18 @@ footer{margin-top:22px; font-size:11.5px; color:var(--text-3); line-height:1.6; 
 /* modo escuro: destaques do quadro (callout) legíveis — a regra da DEMO misturava seletor com @media */
 @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .callout b{color:#8FB4E0;} }
 :root[data-theme="dark"] .callout b{color:#8FB4E0;}
+/* linha do tempo simples: blocos com nome e duração */
+.seg-bloco{color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap;padding:0 6px;line-height:1.15;text-shadow:0 1px 1px rgba(0,0,0,.35)}
+.seg-bloco span{font:700 11.5px 'Manrope',system-ui,sans-serif;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.seg-bloco small{font:600 10.5px 'Manrope',system-ui,sans-serif;opacity:.9}
+.lane-track{min-height:52px}
+/* placar por pessoa */
+.placar{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:14px 0 18px}
+.placar-item{border:1px solid var(--border);border-left:6px solid var(--text-3);border-radius:10px;padding:12px 14px;background:var(--surface)}
+.placar-verde{border-left-color:#1F9D55}.placar-amarelo{border-left-color:#C98A12}.placar-vermelho{border-left-color:#C8372D}
+.placar-quem{display:flex;flex-direction:column;font-size:13px}.placar-quem span{color:var(--text-2);font-size:12px}
+.placar-pct{font-size:34px;font-weight:800;line-height:1.1;margin-top:6px}
+.placar-verde .placar-pct{color:#1F9D55}.placar-amarelo .placar-pct{color:#C98A12}.placar-vermelho .placar-pct{color:#C8372D}
+.placar-txt{font-size:13px;color:var(--text-2)}
+.base-sel{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 4px;font-size:13px;color:var(--text-2)}
+.base-sel a{text-decoration:none}

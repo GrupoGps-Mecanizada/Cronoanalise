@@ -36,7 +36,7 @@
       seq: l.id, data: l.data, turno: l.turno, horario: l.horario, area: l.area, nome: l.nome,
       papel: l.papel, placa: l.placa, vaga: l.vaga, equip: l.equip, hi: l.hi, hf: l.hf,
       cod: l.cod, desc: l.descricao, cls: l.cls, obs: l.obs, row: null,
-      kit: l.kit, folha: l.folha, execAux: l.exec_aux, supervisor: l.supervisor
+      kit: l.kit, folha: l.folha, execAux: l.exec_aux, supervisor: l.supervisor, origem: l.origem || 'folha'
     };
   }
 

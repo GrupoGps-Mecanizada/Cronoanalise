@@ -1,5 +1,11 @@
 # CHANGELOG – Cronoanálise
 
+## v0.4.0 (2026-10-07)
+- Linha do tempo repaginada para leigo: **placar por pessoa** (% trabalhando em letra grande, cor de semáforo: verde ≥ 50%, amarelo 30–49%, vermelho < 30%), blocos que juntam atividades seguidas do mesmo tipo com nome simples e duração (Trabalhando, Preparando, Segurança, Deslocando, Pausa, Parado esperando) e régua de hora em hora.
+- Dois modos: **Simples** (padrão) e **Detalhado** (número do código em cada faixa).
+- Painel com seletor de base: **Folhas novas** ou **Planilha antiga (09 a 22/09)** (`?base=antiga` no endereço).
+- Banco: coluna `origem` em `crono_registros` (`sql/2026-10-07_003_crono_origem.sql`).
+
 ## v0.3.0 (2026-10-07)
 - Visual profissional: emojis trocados por ícones de traço (SVG no próprio código).
 - Todas as telas usam a largura total da página.
