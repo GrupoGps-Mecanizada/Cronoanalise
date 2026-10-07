@@ -260,7 +260,6 @@ details.explain[open] > summary .chev{transform:rotate(90deg);}
 footer{margin-top:22px; font-size:11.5px; color:var(--text-3); line-height:1.6; border-top:1px solid var(--border); padding-top:14px;}
 
 /* ---------- casca da Cronoanálise ---------- */
-.faixa-teste{position:sticky;top:0;z-index:9999;background:#B42318;color:#fff;text-align:center;font:700 13px/1.4 sans-serif;padding:6px 10px}
 .menu{display:flex;flex-wrap:wrap;gap:8px;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--border)}
 .menu a{flex:1 1 140px;text-align:center;padding:12px;border-radius:10px;font-weight:700;text-decoration:none;color:var(--brand);border:1px solid var(--border)}
 .menu a.ativo{background:var(--brand);color:#fff;border-color:var(--brand)}
@@ -271,3 +270,4 @@ footer{margin-top:22px; font-size:11.5px; color:var(--text-3); line-height:1.6; 
 :root[data-theme="dark"] .menu a:not(.ativo){color:var(--s-motorista);}
 /* celular: a tabela do Editar vira cartões e não pode manter 1300px de largura */
 @media (max-width:720px){ .table-lanc{min-width:0;} }
+.header-badge:empty{display:none}

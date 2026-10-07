@@ -6,7 +6,7 @@ const r = banco.paraDemo(linha);
 assert.strictEqual(r.seq, 7); assert.strictEqual(r.desc, 'DDS'); assert.strictEqual(r.execAux, 'E');
 assert.deepStrictEqual(banco.paraBanco(r).descricao, 'DDS');
 assert.ok(!('seq' in banco.paraBanco(r)) && !('id' in banco.paraBanco(r)));
-assert.strictEqual(banco.paraBanco(r).ficticio, true);
+assert.ok(!('ficticio' in banco.paraBanco(r)), 'dados reais: não marca como fictício');
 assert.strictEqual(banco.escaparRegistro(r).obs, '&lt;img src=x onerror=alert(1)&gt;');
 assert.strictEqual(banco.escaparRegistro(r).cod, 6);
 // campos vazios viram null (o banco recusa '' em turno e E/A)

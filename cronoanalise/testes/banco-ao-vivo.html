@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Teste: banco ao vivo</title></head>
+<body>
+<!-- Usa as funções reais do banco.js contra o Supabase: grava, lê, altera e apaga UMA linha de teste. -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/config.js"></script>
+<script>Crono.esc = t => String(t ?? '');</script>
+<script src="../js/banco.js"></script>
+<script>
+(async function () {
+  const b = Crono.banco, passos = [];
+  const folha = 'TESTE-CLAUDE-' + Date.now();
+  let seq = null;
+  try {
+    const [r] = await b.inserirRegistros([{ data: '2026-10-07', papel: 'Operador 1', equip: 'Vácuo', hi: '07:00', hf: '07:30', cod: '42', desc: 'Sucção', cls: 'Produzindo', folha }]);
+    seq = r.seq; passos.push('inseriu');
+    if (!(await b.folhaJaLancada(folha))) throw new Error('folhaJaLancada');
+    passos.push('ja-lancada');
+    const lidos = await b.listarRegistros({ folha });
+    if (lidos.length !== 1 || lidos[0].desc !== 'Sucção') throw new Error('listar');
+    passos.push('listou');
+    await b.atualizarRegistro(seq, Object.assign({}, lidos[0], { obs: 'alterado' }));
+    if ((await b.listarRegistros({ folha }))[0].obs !== 'alterado') throw new Error('atualizar');
+    passos.push('alterou');
+    const achado = await b.buscarFolha('CR-0001-OP1');
+    if (!achado || achado.kit.codigo !== 'CR-0001') throw new Error('buscarFolha');
+    passos.push('buscou-folha');
+    if ((await b.buscarKit('CR-0001')).tipo !== 'av') throw new Error('buscarKit');
+    passos.push('buscou-kit');
+    try { await b.inserirRegistros([{ data: '2026-10-07', papel: 'Motorista', equip: 'Vácuo', hi: '7h', hf: '07:10' }]); throw new Error('regra não barrou'); }
+    catch (e) { if (!/fora do padrão/.test(e.message)) throw e; passos.push('mensagem-clara'); }
+  } catch (e) { passos.push('ERRO ' + e.message); }
+  finally {
+    if (seq) { await b.excluirRegistro(seq); passos.push((await b.listarRegistros({ folha })).length === 0 ? 'excluiu' : 'ERRO excluir'); }
+  }
+  document.title = (passos.some(p => p.startsWith('ERRO')) ? 'FALHA ' : 'OK ') + passos.join(',');
+})();
+</script>
+</body></html>

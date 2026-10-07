@@ -21,9 +21,9 @@ Sistema da cronoanálise das equipes (Alta Pressão, Auto Vácuo, Hiper Vácuo e
 - Mudanças do banco ficam em `sql/`, com data no nome. Rodar na ordem.
 - No navegador vai só a chave pública (`publishable`), em `js/config.js`. Nunca coloque a chave secreta aqui.
 
-## Sem login (decisão do dono, temporária)
-Qualquer pessoa com o endereço lê e grava. Por isso **só dados fictícios** (marcados com `ficticio = true`).
-**Antes dos dados reais:** ligar o login, trocar as regras de `crono_registros` para `authenticated` (SQL novo) e apagar os fictícios (`delete from crono_registros where ficticio`).
+## Sem login (decisão do dono)
+Qualquer pessoa com o endereço consegue ler, gravar e apagar lançamentos (a chave pública fica no código).
+**Para proteger os nomes da equipe:** ligar o login e trocar as regras de `crono_registros` de `anon` para `authenticated` (SQL novo em `sql/`).
 
 ## Arquivos
 ```

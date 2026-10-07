@@ -40,7 +40,6 @@
     };
   }
 
-  // Sem login nesta versão: tudo o que é gravado fica marcado como fictício.
   function paraBanco(r) {
     const cod = vazioParaNull(r.cod);
     return {
@@ -50,7 +49,7 @@
       hi: vazioParaNull(r.hi), hf: vazioParaNull(r.hf), cod: cod == null ? null : Number(cod),
       descricao: vazioParaNull(r.desc), cls: vazioParaNull(r.cls), obs: vazioParaNull(r.obs),
       exec_aux: vazioParaNull(r.execAux), supervisor: vazioParaNull(r.supervisor),
-      kit: vazioParaNull(r.kit), folha: vazioParaNull(r.folha), ficticio: true
+      kit: vazioParaNull(r.kit), folha: vazioParaNull(r.folha)
     };
   }
 
