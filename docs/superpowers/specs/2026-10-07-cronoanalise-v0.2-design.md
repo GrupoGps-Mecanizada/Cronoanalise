@@ -14,7 +14,7 @@ Um sistema só, com o visual do SGE, publicado no GitHub Pages, com 4 telas:
 | Assunto | Decisão |
 |---|---|
 | Estrutura | Um `index.html` com menu + um arquivo JS por tela |
-| Visual | `sge-core` v1 (`<body class="sge">`) + estilos próprios da folha e dos gráficos |
+| Visual | O do `sistema (3)`/DEMO (cabeçalho GRUPO GPS Mecanizada, cores, abas), que já segue a marca, + estilos da folha impressa. O `sge-core` fica para quando o login entrar (evita dois estilos brigando) |
 | Login | **Sem login por enquanto** (decisão do dono, 07/10/2026) |
 | Dados | Só **fictícios** (os 974 registros da DEMO) enquanto não houver login. Dados reais entram só depois de ligar o login |
 | Formato | Tabela `crono_registros` com as mesmas colunas dos registros da DEMO |
@@ -27,7 +27,8 @@ CRONOANALISE/                  (raiz do repositório)
   index.html                   atalho: redireciona para cronoanalise/
   cronoanalise/
     index.html                 casca: faixa "versão de teste", menu e as 4 telas
-    css/cronoanalise.css       estilos da folha impressa, do painel e do menu
+    css/painel.css             estilos da DEMO + menu
+    css/kit.css                estilos da tela do kit e da folha impressa
     js/config.js               URL e chave publishable, códigos (1–69) e classificação, equipamentos, vagas, supervisores
     js/banco.js                todas as conversas com o Supabase (supabase-js v2 por CDN)
     js/app.js                  menu e troca de telas
@@ -39,7 +40,7 @@ CRONOANALISE/                  (raiz do repositório)
     sql/2026-10-07_002_crono_registros.sql
     testes/                    testes do cálculo e das conferências (rodam com Node)
 ```
-Bibliotecas grátis por CDN: supabase-js v2, Chart.js (já usado no sistema (3)), qrcodejs.
+Bibliotecas grátis por CDN: supabase-js v2 e qrcodejs. Os gráficos do sistema (3) são desenhados em SVG, sem biblioteca.
 O `.gitignore` em lista branca passa a liberar também o `index.html` da raiz.
 
 ## 4. Telas
@@ -82,7 +83,7 @@ Tabela nova `crono_registros` (formato da DEMO):
 |---|---|---|
 | id | bigint identity PK | 1 |
 | data | date | 2026-09-14 |
-| turno | text (≤5) | A |
+| turno | text: A, B, C, D, ADM, 16 Horas | A |
 | horario | text (≤20) | 19h às 07h |
 | area | text (≤80) | Alto Forno 3 |
 | nome | text (≤80) | Carlos Andrade |
