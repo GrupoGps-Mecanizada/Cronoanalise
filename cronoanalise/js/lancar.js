@@ -78,7 +78,7 @@
           ${['', 'E', 'A'].map(v => `<option value="${v}"${l.execAux === v ? ' selected' : ''}>${v || '–'}</option>`).join('')}
         </select></td>
         <td><input type="text" maxlength="300" data-campo="obs" value="${esc(l.obs)}" aria-label="Observação da linha ${i + 1}"></td>
-        <td><button type="button" class="btn-icon danger" data-remover="${i}" title="Remover linha">🗑</button></td>
+        <td><button type="button" class="btn-icon danger" data-remover="${i}" title="Remover linha" aria-label="Remover linha ${i + 1}"><svg class="ic" aria-hidden="true"><use href="#i-lixeira"/></svg></button></td>
       </tr>`).join('');
   }
 

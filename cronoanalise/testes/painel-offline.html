@@ -9,6 +9,8 @@
 <script>Crono.esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));</script>
 <script src="../js/banco.js"></script>
 <script src="../js/painel-calculo.js"></script>
+<script src="../js/conferencias.js"></script>
+<script src="../js/resumo.js"></script>
 <script src="../js/painel.js"></script>
 <script>
 (async function () {
@@ -27,6 +29,11 @@
   document.querySelectorAll('#produtSubtabs .pill').forEach(b => b.click());
   document.querySelectorAll('.crew-item').forEach(b => b.click());   // inclusive a do Motorista no Aspirador
   if (!document.getElementById('horarioChart').textContent.includes('23h–07h')) throw new Error('23h às 07h fora do gráfico por horário');
+  document.querySelector('#tlModo [data-modo="grupo"]').click();
+  const comCodigo = [...document.querySelectorAll('.seg-grupo')].filter(x => /^\d+$/.test(x.textContent));
+  if (!comCodigo.length) throw new Error('modo Atividades sem números nas faixas');
+  if (!document.querySelector('#resumoEquipe .rs-papel')) throw new Error('Resumo da equipe vazio');
+  if (document.getElementById('legendaGrupo').hidden) throw new Error('legenda dos grupos escondida');
   document.title = 'PRONTO ' + document.querySelectorAll('.kpi').length + ' kpis, ' + document.querySelectorAll('.crew-item').length + ' equipes';
 })().catch(e => console.error('FALHOU: ' + e.message));
 </script>

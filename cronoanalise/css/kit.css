@@ -7,7 +7,7 @@
   #tela-kit *{box-sizing:border-box}
 
   /* ---------- TELA ---------- */
-  #tela-kit .tela{max-width:960px;margin:0 auto;padding:16px}
+  #tela-kit .tela{max-width:none;margin:0;padding:16px clamp(16px,2vw,32px)}
   #tela-kit .tela h1{font-size:22px;color:var(--kit-brand);margin:8px 0 4px}
   #tela-kit .tela .sub{color:var(--kit-text-2);margin:0 0 16px;font-size:14px}
   #tela-kit .card{background:var(--kit-surface);border:1px solid var(--kit-border);border-radius:10px;padding:16px;margin-bottom:14px}

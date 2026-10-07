@@ -42,7 +42,7 @@
 *{box-sizing:border-box;}
 body{margin:0; background:var(--bg); color:var(--text); font-family:'Manrope',system-ui,-apple-system,sans-serif; font-size:14px; line-height:1.45; padding-inline:0; padding-block:0;}
 h1,h2,h3{margin:0; letter-spacing:-.01em; text-wrap:balance;}
-.wrap{max-width:1280px; margin:0 auto; padding-inline:16px;}
+.wrap{max-width:none; margin:0; padding-inline:clamp(16px,2vw,32px);}
 
 /* header */
 .app-header{background:var(--brand); color:#fff; padding:16px clamp(16px,4vw,40px); display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px;}
@@ -274,3 +274,28 @@ footer{margin-top:22px; font-size:11.5px; color:var(--text-3); line-height:1.6; 
 /* modo escuro: aba ativa legível (a regra original da DEMO misturava seletor com @media e não valia) */
 @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .tab.active{color:var(--s-motorista);} }
 :root[data-theme="dark"] .tab.active{color:var(--s-motorista);}
+/* ícones de traço (sprite SVG no index.html) */
+.ic{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px}
+.menu a{display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn-icon .ic{width:16px;height:16px}
+#tela-kit button .ic{margin-right:6px}
+/* linha do tempo: modos e número do código nas faixas */
+.tl-acoes{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.tl-acoes .pills{margin:0}
+.seg-grupo{color:#fff;font:700 10px/1 'Manrope',system-ui,sans-serif;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap;text-shadow:0 1px 1px rgba(0,0,0,.35)}
+/* resumo da equipe */
+.rs-papel{margin-bottom:14px}
+.rs-topo{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;margin-bottom:6px;font-size:13px}
+.rs-nome{color:var(--text-2)}
+.rs-total{margin-left:auto;color:var(--text-2);font-size:12.5px}
+.rs-barra{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--nodata-soft)}
+.rs-parte{height:100%}
+.rs-lista{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:6px;font-size:12px;color:var(--text-2)}
+.rs-lista b{color:var(--text)}
+.rs-achados{margin:8px 0 0;padding-left:18px;font-size:13px;line-height:1.6}
+.rs-alerta{color:var(--bad)}
+.rs-lista .dot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.legend-row[hidden]{display:none}
+/* modo escuro: destaques do quadro (callout) legíveis — a regra da DEMO misturava seletor com @media */
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .callout b{color:#8FB4E0;} }
+:root[data-theme="dark"] .callout b{color:#8FB4E0;}

@@ -254,10 +254,18 @@ function desenhar(ALL) {
           if (seg.startMin==null) return;
           var left=(seg.startMin-gmin)/span*100, width=Math.max((seg.endMin-seg.startMin)/span*100,0.3);
           var s = document.createElement('div'); var ck = CLS_KEY[seg.cls]||'unk';
-          s.className='seg '+ck; s.style.left=left+'%'; s.style.width=width+'%';
+          var grupo = Crono.config.grupoDe(seg.cod);
+          if (modoTl === 'grupo') {
+            s.className = 'seg seg-grupo'; s.style.background = grupo.cor;
+            s.textContent = seg.cod != null ? seg.cod : '';
+          } else {
+            s.className = 'seg '+ck;
+          }
+          s.style.left=left+'%'; s.style.width=width+'%';
           s.addEventListener('mousemove', function(e){
             var clsVar = CLS_VAR[seg.cls]||'--text-3';
             showTip(e, '<b>'+(seg.desc||'Não classificado')+'</b>'+fmtHM(seg.startMin)+' – '+fmtHM(seg.endMin)+
+              '<br><span style="opacity:.85">Código '+(seg.cod!=null?seg.cod:'—')+' · '+grupo.nome+'</span>'+
               (seg.obs?'<br><span style="opacity:.8">'+(seg.obs||'')+'</span>':'')+
               '<div class="cls-tag" style="background:var('+clsVar+');color:#fff">'+(seg.cls||'Não classificado')+'</div>');
           });
@@ -325,7 +333,58 @@ function desenhar(ALL) {
     });
   }
 
-  function select(i){ current=i; markActive(); var c=DATA.crews[i]; renderTimeline(c); renderCompare(c); renderObs(c); }
+  // ---------- modo da linha do tempo: Produtividade (3 classes) ou Atividades (grupo + código) ----------
+  var modoTl = 'cls';
+  var GRUPOS_LEG = Crono.config.GRUPOS;
+  document.getElementById('legendaGrupo').innerHTML = GRUPOS_LEG.map(function(g){
+    return '<span><span class="dot" style="background:'+g.cor+'"></span>'+g.nome+'</span>';
+  }).join('');
+  document.querySelectorAll('#tlModo .pill').forEach(function(b){
+    b.addEventListener('click', function(){
+      modoTl = b.dataset.modo;
+      document.querySelectorAll('#tlModo .pill').forEach(function(x){ x.classList.toggle('active', x===b); });
+      document.getElementById('legendaCls').hidden = modoTl !== 'cls';
+      document.getElementById('legendaGrupo').hidden = modoTl !== 'grupo';
+      renderTimeline(DATA.crews[current]);
+    });
+  });
+
+  // ---------- Resumo da equipe ----------
+  function fmtHoras(h){ var m = Math.round(h*60); return Math.floor(m/60)+'h'+(m%60<10?'0':'')+(m%60); }
+  function renderResumo(c){
+    var res = Crono.resumoEquipe(c);
+    var alvo = document.getElementById('resumoEquipe');
+    if (!res.papeis.length){ alvo.innerHTML = '<div class="obs-empty">Sem lançamentos nesta equipe.</div>'; return; }
+    var linhas = res.papeis.map(function(p){
+      var barras = GRUPOS_LEG.map(function(g){
+        var h = p.porGrupo[g.chave]; if (!h) return '';
+        return '<div class="rs-parte" style="width:'+(100*h/p.total)+'%;background:'+g.cor+'" title="'+g.nome+': '+fmtHoras(h)+'"></div>';
+      }).join('');
+      var lista = GRUPOS_LEG.filter(function(g){ return p.porGrupo[g.chave]; }).map(function(g){
+        return '<span><span class="dot" style="background:'+g.cor+'"></span>'+g.nome+' <b>'+fmtHoras(p.porGrupo[g.chave])+'</b></span>';
+      }).join('');
+      return '<div class="rs-papel"><div class="rs-topo"><b>'+p.papel+'</b> <span class="rs-nome">'+(p.nome||'—')+'</span>'+
+        '<span class="rs-total">'+fmtHoras(p.total)+' · '+(p.pctProd==null?'—':p.pctProd.toFixed(0)+'% em operação')+'</span></div>'+
+        '<div class="rs-barra">'+barras+'</div><div class="rs-lista">'+lista+'</div></div>';
+    }).join('');
+    var achados = [];
+    if (res.maiorPerda){
+      achados.push('<li><b>Maior perda:</b> '+fmtHoras(res.maiorPerda.horas)+' de esperas no '+res.maiorPerda.papel+
+        ', principalmente o código '+res.maiorPerda.cod+' ('+res.maiorPerda.desc+').</li>');
+    } else {
+      achados.push('<li><b>Sem esperas</b> lançadas nesta equipe.</li>');
+    }
+    var comPct = res.papeis.filter(function(p){ return p.pctProd!=null; }).sort(function(a,b){ return b.pctProd-a.pctProd; });
+    if (comPct.length >= 2){
+      var mais = comPct[0], menos = comPct[comPct.length-1];
+      achados.push('<li><b>Operação:</b> '+mais.papel+' ficou '+mais.pctProd.toFixed(0)+'% do tempo em operação; '+
+        menos.papel+', '+menos.pctProd.toFixed(0)+'%.</li>');
+    }
+    res.alertas.forEach(function(a){ achados.push('<li class="rs-alerta"><b>Conferir:</b> '+a+'</li>'); });
+    alvo.innerHTML = linhas + '<ul class="rs-achados">'+achados.join('')+'</ul>';
+  }
+
+  function select(i){ current=i; markActive(); var c=DATA.crews[i]; renderTimeline(c); renderResumo(c); renderCompare(c); renderObs(c); }
   renderCrewList();
   select(current);
 

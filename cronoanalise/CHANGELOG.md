@@ -1,5 +1,13 @@
 # CHANGELOG – Cronoanálise
 
+## v0.3.0 (2026-10-07)
+- Visual profissional: emojis trocados por ícones de traço (SVG no próprio código).
+- Todas as telas usam a largura total da página.
+- Linha do tempo com dois modos: **Produtividade** (3 classificações) e **Atividades** (6 grupos de cor com o número do código em cada faixa).
+- Grupos de atividade: Operação; Preparação e apoio; Segurança e documentação; Logística; Pausas e pessoal; Esperas e perdas (em `js/config.js`).
+- **Resumo da equipe**: horas por grupo e por papel, maior perda (código de espera mais longo), comparação de operação entre papéis e alerta de código fora da folha.
+- Modo escuro: legendas e destaques do comparativo legíveis.
+
 ## v0.2.1 (2026-10-07)
 - Sem faixa de "versão de teste" e sem marcar dados como fictícios: pronto para os dados reais.
 - Teste automático do banco ao vivo (`testes/banco-ao-vivo.html`): grava, lê, altera e apaga uma linha de teste.

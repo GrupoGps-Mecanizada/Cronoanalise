@@ -57,8 +57,8 @@
         (CLS_BADGE_STYLE[r.cls] || 'background:var(--nodata-soft); color:var(--text-3);') + '">' + esc(r.cls || '—') + '</span></td>' +
       '<td data-label="Observações" class="lanc-truncate" title="' + esc(r.obs || '') + '">' + esc(r.obs || '—') + '</td>' +
       '<td><div class="row-actions">' +
-        '<button type="button" class="btn-icon" data-act="edit" data-seq="' + esc(r.seq) + '" title="Editar">✎</button>' +
-        '<button type="button" class="btn-icon danger" data-act="del" data-seq="' + esc(r.seq) + '" title="Excluir">🗑</button>' +
+        '<button type="button" class="btn-icon" data-act="edit" data-seq="' + esc(r.seq) + '" title="Editar" aria-label="Editar"><svg class="ic" aria-hidden="true"><use href="#i-editar"/></svg></button>' +
+        '<button type="button" class="btn-icon danger" data-act="del" data-seq="' + esc(r.seq) + '" title="Excluir" aria-label="Excluir"><svg class="ic" aria-hidden="true"><use href="#i-lixeira"/></svg></button>' +
       '</div></td>';
   }
 
