@@ -271,3 +271,6 @@ footer{margin-top:22px; font-size:11.5px; color:var(--text-3); line-height:1.6; 
 /* celular: a tabela do Editar vira cartões e não pode manter 1300px de largura */
 @media (max-width:720px){ .table-lanc{min-width:0;} }
 .header-badge:empty{display:none}
+/* modo escuro: aba ativa legível (a regra original da DEMO misturava seletor com @media e não valia) */
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .tab.active{color:var(--s-motorista);} }
+:root[data-theme="dark"] .tab.active{color:var(--s-motorista);}
