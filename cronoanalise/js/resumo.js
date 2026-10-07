@@ -41,30 +41,6 @@
     return { papeis, maiorPerda, alertas };
   }
 
-  // Junta atividades seguidas do mesmo grupo num bloco só (visão simples da linha do tempo).
-  function blocosSimples(segmentos) {
-    const blocos = [];
-    segmentos.filter(s => s.startMin != null).forEach(s => {
-      const grupo = grupoDe(s.cod);
-      const ultimo = blocos[blocos.length - 1];
-      if (ultimo && ultimo.grupo.chave === grupo.chave && s.startMin <= ultimo.endMin) {
-        ultimo.endMin = Math.max(ultimo.endMin, s.endMin);
-        ultimo.itens.push(s);
-      } else {
-        blocos.push({ grupo, startMin: s.startMin, endMin: s.endMin, itens: [s] });
-      }
-    });
-    return blocos;
-  }
-
-  function corDoPlacar(pct) {
-    if (pct == null) return 'neutro';
-    const { verde, amarelo } = Crono.config.PLACAR;
-    return pct >= verde ? 'verde' : pct >= amarelo ? 'amarelo' : 'vermelho';
-  }
-
-  Crono.blocosSimples = blocosSimples;
-  Crono.corDoPlacar = corDoPlacar;
   Crono.resumoEquipe = resumoEquipe;
   if (typeof module !== 'undefined') module.exports = Crono;
 })(typeof window !== 'undefined' ? window : globalThis);

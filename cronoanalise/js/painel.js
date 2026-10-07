@@ -225,17 +225,16 @@ function desenhar(ALL) {
     var axis = document.createElement('div'); axis.className='tl-axis';
     var spacer = document.createElement('div');
     var ticks = document.createElement('div'); ticks.className='ticks';
-    var stepMin = 60;
+    var stepMin = span>600?120:60;
     var firstTick = Math.ceil(gmin/stepMin)*stepMin;
     for (var t=firstTick; t<=gmax; t+=stepMin){
       var p2 = (t-gmin)/span*100;
       var el = document.createElement('div'); el.className='tick'; el.style.left=p2+'%';
-      el.textContent = fmtHM(t).split(' ')[0].slice(0,2)+'h';
+      el.textContent = fmtHM(t).split(' ')[0];
       ticks.appendChild(el);
     }
     axis.appendChild(spacer); axis.appendChild(ticks); inner.appendChild(axis);
 
-    renderPlacar(c);
     c.expectedRoles.forEach(function(role){
       var rd = c.roles[role] || PAPEL_VAZIO;
       var lane = document.createElement('div'); lane.className='lane';
@@ -251,28 +250,12 @@ function desenhar(ALL) {
         lane.appendChild(empty);
       } else {
         var track = document.createElement('div'); track.className='lane-track';
-        if (modoTl === 'simples') {
-          Crono.blocosSimples(rd.segments).forEach(function(b){
-            var left=(b.startMin-gmin)/span*100, width=Math.max((b.endMin-b.startMin)/span*100,0.3);
-            var dur = (b.endMin-b.startMin)/60;
-            var s = document.createElement('div'); s.className='seg seg-bloco';
-            s.style.left=left+'%'; s.style.width=width+'%'; s.style.background=b.grupo.cor;
-            if (b.endMin-b.startMin >= 40) s.innerHTML = '<span>'+b.grupo.rotulo+'</span><small>'+fmtHoras(dur)+'</small>';
-            s.addEventListener('mousemove', function(e){
-              showTip(e, '<b>'+b.grupo.rotulo+' · '+fmtHoras(dur)+'</b>'+fmtHM(b.startMin)+' – '+fmtHM(b.endMin)+
-                '<div style="margin-top:6px;opacity:.85">'+b.itens.map(function(it){
-                  return fmtHM(it.startMin).split(' ')[0]+' '+(it.cod!=null?it.cod+' · ':'')+(it.desc||'');
-                }).join('<br>')+'</div>');
-            });
-            s.addEventListener('mouseleave', hideTip);
-            track.appendChild(s);
-          });
-        } else rd.segments.forEach(function(seg){
+        rd.segments.forEach(function(seg){
           if (seg.startMin==null) return;
           var left=(seg.startMin-gmin)/span*100, width=Math.max((seg.endMin-seg.startMin)/span*100,0.3);
           var s = document.createElement('div'); var ck = CLS_KEY[seg.cls]||'unk';
           var grupo = Crono.config.grupoDe(seg.cod);
-          if (modoTl === 'detalhado') {
+          if (modoTl === 'grupo') {
             s.className = 'seg seg-grupo'; s.style.background = grupo.cor;
             s.textContent = seg.cod != null ? seg.cod : '';
           } else {
@@ -351,30 +334,17 @@ function desenhar(ALL) {
   }
 
   // ---------- modo da linha do tempo: Produtividade (3 classes) ou Atividades (grupo + código) ----------
-  var modoTl = 'simples';
+  var modoTl = 'cls';
   var GRUPOS_LEG = Crono.config.GRUPOS;
-  function desenharLegenda(){
-    document.getElementById('legendaGrupo').innerHTML = GRUPOS_LEG.map(function(g){
-      return '<span><span class="dot" style="background:'+g.cor+'"></span>'+(modoTl==='simples'?g.rotulo:g.nome)+'</span>';
-    }).join('');
-  }
-  desenharLegenda();
-
-  // Placar: quanto cada pessoa ficou trabalhando, em letra grande e com cor de semáforo.
-  function renderPlacar(c){
-    var res = Crono.resumoEquipe(c);
-    document.getElementById('placar').innerHTML = res.papeis.map(function(p){
-      var cor = Crono.corDoPlacar(p.pctProd);
-      return '<div class="placar-item placar-'+cor+'"><div class="placar-quem"><b>'+(p.nome||p.papel)+'</b><span>'+p.papel+'</span></div>'+
-        '<div class="placar-pct">'+(p.pctProd==null?'—':p.pctProd.toFixed(0)+'%')+'</div>'+
-        '<div class="placar-txt">Trabalhou <b>'+fmtHoras(p.porGrupo.operacao)+'</b> de '+fmtHoras(p.total)+'</div></div>';
-    }).join('');
-  }
+  document.getElementById('legendaGrupo').innerHTML = GRUPOS_LEG.map(function(g){
+    return '<span><span class="dot" style="background:'+g.cor+'"></span>'+g.nome+'</span>';
+  }).join('');
   document.querySelectorAll('#tlModo .pill').forEach(function(b){
     b.addEventListener('click', function(){
       modoTl = b.dataset.modo;
       document.querySelectorAll('#tlModo .pill').forEach(function(x){ x.classList.toggle('active', x===b); });
-      desenharLegenda();
+      document.getElementById('legendaCls').hidden = modoTl !== 'cls';
+      document.getElementById('legendaGrupo').hidden = modoTl !== 'grupo';
       renderTimeline(DATA.crews[current]);
     });
   });
@@ -731,15 +701,10 @@ function desenhar(ALL) {
 
 Crono.painel = {
   desenhar, // usado pela página de teste testes/painel-offline.html
-  // Base do painel pelo endereço: ?base=antiga mostra a planilha antiga; sem nada, as folhas novas.
-  baseEscolhida: () => new URLSearchParams(location.search).get('base') === 'antiga' ? 'planilha_antiga' : 'folha',
   async iniciar() {
     const estado = document.getElementById('painelEstado');
     try {
-      const base = Crono.painel.baseEscolhida();
-      document.querySelectorAll('#baseSel a').forEach(a => a.classList.toggle('active', a.dataset.base === base));
-      const regs = (await Crono.banco.listarRegistros())
-        .filter(r => r.origem === base).map(Crono.banco.escaparRegistro);
+      const regs = (await Crono.banco.listarRegistros()).map(Crono.banco.escaparRegistro);
       if (!regs.length) { estado.textContent = 'Ainda não há lançamentos neste período.'; return; }
       desenhar(Crono.calcularPainel(regs));
       estado.remove();   // só depois de desenhar: se der erro, a mensagem continua na tela
