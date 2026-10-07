@@ -286,6 +286,9 @@
     <div class="view" id="view-lancamentos">
       <div class="toolbar">
         <input type="text" id="lancSearch" class="toolbar-search" placeholder="Buscar por data, nome, vaga, equipamento…">
+        <input type="date" id="edDe" title="De" aria-label="Data inicial">
+        <input type="date" id="edAte" title="Até" aria-label="Data final">
+        <input type="text" id="edFolha" placeholder="ID da folha (ex.: CR-0002-OP1)" aria-label="ID da folha">
         <button type="button" id="lancNewBtn" class="btn btn-primary">+ Novo lançamento</button>
       </div>
       <div class="card table-card">
@@ -298,6 +301,12 @@
         </table>
         <div id="lancEmpty" class="lanc-empty" style="display:none;">Nenhum lançamento encontrado.</div>
       </div>
+      <div class="toolbar" style="justify-content:center">
+        <button type="button" class="btn" id="edAnt">‹ Anterior</button>
+        <span id="edPag"></span>
+        <button type="button" class="btn" id="edProx">Próxima ›</button>
+      </div>
+      <div class="lanc-note" id="edAviso" role="status"></div>
       <div class="lanc-note">As alterações ficam salvas no banco e aparecem para todos.</div>
     </div>
   </main>
