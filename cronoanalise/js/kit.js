@@ -23,15 +23,7 @@ const VAGAS = {
 const REGIME_VAGA = { 'AP-01': '24 HS', 'AP-07': '16 HS', 'AP-08': '24 HS',
                       'AV-01': '24 HS', 'AV-07': '16 HS', 'AV-08': '24 HS' };
 
-const SUPERVISORES = [
-  { nome: 'Ozias',          turno: 'A' },
-  { nome: 'Matusalém',      turno: 'B' },
-  { nome: 'Israel',         turno: 'C' },
-  { nome: 'Fábio',          turno: 'D' },
-  { nome: 'Júnior Pereira', turno: 'ADM' },
-  { nome: 'Genésio',        turno: 'ADM' },
-  { nome: 'Donizete',       turno: 'ADM' }
-];
+const SUPERVISORES = Crono.config.SUPERVISORES;
 
 /* ===================== CÓDIGOS ===================== */
 const CODIGOS_GERAIS = [

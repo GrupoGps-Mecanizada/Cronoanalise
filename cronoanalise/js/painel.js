@@ -218,7 +218,7 @@ function desenhar(ALL) {
 
     var inner = document.getElementById('tlInner'); inner.innerHTML='';
     var gmin=c.globalMin, gmax=c.globalMax;
-    if (gmin==null){ gmin=0; gmax=1440; }
+    if (gmin==null || !isFinite(gmin) || !isFinite(gmax)){ gmin=0; gmax=1440; }  // equipe sem segmentos não pode travar o laço das marcas
     if (gmax<=gmin) gmax = gmin+60;
     var span = gmax-gmin;
 
@@ -573,7 +573,9 @@ function desenhar(ALL) {
 
   // ---- Chart: por horário ----
   function renderHorarioChart(){
-    var order = ['07h às 17h','07h às 19h','19h às 07h','07h às 15h','15h às 23h'];
+    var order = ['07h às 17h','07h às 19h','19h às 07h','07h às 15h','15h às 23h','23h às 07h'];
+    // Horários fora da lista (digitados à mão) entram no fim, para nada sumir do gráfico.
+    order = order.concat(Object.keys(CH.horario).filter(function(h){ return order.indexOf(h)===-1; }).sort());
     var cats = order.filter(function(h){ return CH.horario[h]; }).map(function(h){ return {key:h, label:h.replace(' às ','–').replace(/h/g,'h')}; });
     var series = ['Motorista','Operador'].map(function(rg){
       var values = {};
@@ -644,9 +646,9 @@ Crono.painel = {
     const estado = document.getElementById('painelEstado');
     try {
       const regs = (await Crono.banco.listarRegistros()).map(Crono.banco.escaparRegistro);
-      if (!regs.length) { estado.textContent = 'Ainda não há lançamentos.'; return; }
-      estado.remove();
+      if (!regs.length) { estado.textContent = 'Ainda não há lançamentos neste período.'; return; }
       desenhar(Crono.calcularPainel(regs));
+      estado.remove();   // só depois de desenhar: se der erro, a mensagem continua na tela
     } catch (e) {
       estado.innerHTML = Crono.esc(e.message) + ' <button type="button" class="btn" onclick="location.reload()">Tentar de novo</button>';
     }

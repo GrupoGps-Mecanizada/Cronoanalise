@@ -58,7 +58,9 @@
       const p = doKit[0];
       const eq = equipPorNome[p.equip] ||
         { nome: p.equip, label: p.equip, papeis: null };
-      const esperados = eq.papeis ? eq.papeis.map(x => PAPEL_NOME[x]) : [...new Set(doKit.map(x => x.papel))];
+      const daComposicao = eq.papeis ? eq.papeis.map(x => PAPEL_NOME[x]) : [...new Set(doKit.map(x => x.papel))];
+      // Papel lançado fora da composição (ex.: Motorista num Aspirador) também entra, para não sumir nem travar o desenho.
+      const esperados = daComposicao.concat([...new Set(doKit.map(x => x.papel))].filter(p => !daComposicao.includes(p)));
       const roles = {};
       esperados.forEach(papel => {
         const segs = doKit.filter(x => x.papel === papel);
@@ -77,7 +79,7 @@
         vaga: p.vaga, placa: p.placa ?? null, area: p.area, turno: p.turno,
         horario: p.horario, expectedRoles: esperados, roles,
         rolesWithData: Object.keys(roles), completenessNum: Object.keys(roles).length,
-        completenessDen: esperados.length,
+        completenessDen: daComposicao.length,
         globalMin: Math.min(...todos.map(s => s.startMin)), globalMax: Math.max(...todos.map(s => s.endMin)),
         kit: p.kit ?? null, supervisor: p.supervisor ?? null
       };
@@ -100,15 +102,17 @@
       alvo[chave] = alvo[chave] || zero();
       alvo[chave][r.cls] += h;
     };
-    const pegar = (obj, chave) => (obj[chave] = obj[chave] || {});
+    // Objetos sem protótipo: o horário é texto livre e "__proto__" não pode contaminar nada.
+    const novo = () => Object.create(null);
+    const pegar = (obj, chave) => (obj[chave] = obj[chave] || novo());
     const lista = (obj, chave) => (obj[chave] = obj[chave] || []);
 
     const eqChart = {};
     Object.values(EQUIP).forEach(e => {
       eqChart[e.chave] = { label: e.label, slots: e.slots, hasMotorista: e.papeis.includes('MOT'), vagas: {} };
     });
-    const vagaRg = {}, vagaRole = {}, vagaNome = {}, vagaObsRg = {}, vagaObsRole = {};
-    const turnoRg = {}, turnoObs = {}, horRg = {}, horObs = {}, eqRg = {}, roleRg = {};
+    const vagaRg = novo(), vagaRole = novo(), vagaNome = novo(), vagaObsRg = novo(), vagaObsRole = novo();
+    const turnoRg = novo(), turnoObs = novo(), horRg = novo(), horObs = novo(), eqRg = novo(), roleRg = novo();
 
     regs.forEach(({ r, h, valido }) => {
       if (!valido) return;

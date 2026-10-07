@@ -266,3 +266,8 @@ footer{margin-top:22px; font-size:11.5px; color:var(--text-3); line-height:1.6; 
 .menu a.ativo{background:var(--brand);color:#fff;border-color:var(--brand)}
 .tela-app{display:none}.tela-app.ativa{display:block}
 .estado{padding:24px;text-align:center;color:var(--text-2)}
+/* modo escuro: o azul da marca some no fundo escuro, então o menu usa o azul claro (igual à aba ativa) */
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .menu a:not(.ativo){color:var(--s-motorista);} }
+:root[data-theme="dark"] .menu a:not(.ativo){color:var(--s-motorista);}
+/* celular: a tabela do Editar vira cartões e não pode manter 1300px de largura */
+@media (max-width:720px){ .table-lanc{min-width:0;} }

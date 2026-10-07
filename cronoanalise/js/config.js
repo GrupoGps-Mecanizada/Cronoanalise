@@ -84,7 +84,16 @@
       as: { nome: 'Aspirador de Pó', chave: 'aspirador', label: 'Aspirador', slots: 10, papeis: ['OP1', 'OP2'] }
     },
     PAPEL_NOME: { MOT: 'Motorista', OP1: 'Operador 1', OP2: 'Operador 2' },
-    TURNOS: ['A', 'B', 'C', 'D', 'ADM', '16 Horas']
+    TURNOS: ['A', 'B', 'C', 'D', 'ADM', '16 Horas'],
+    SUPERVISORES: [
+      { nome: 'Ozias',          turno: 'A' },
+      { nome: 'Matusalém',      turno: 'B' },
+      { nome: 'Israel',         turno: 'C' },
+      { nome: 'Fábio',          turno: 'D' },
+      { nome: 'Júnior Pereira', turno: 'ADM' },
+      { nome: 'Genésio',        turno: 'ADM' },
+      { nome: 'Donizete',       turno: 'ADM' }
+    ]
   };
   raiz.Crono = Object.assign(raiz.Crono || {}, { config });
   if (typeof module !== 'undefined') module.exports = raiz.Crono;

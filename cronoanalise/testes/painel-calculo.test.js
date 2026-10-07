@@ -32,4 +32,15 @@ assert.strictEqual(p.timeline.crews.length, 1);
 // 4) sem horário do turno: 23:00 → 01:00 vale 2 h
 const virada = Object.assign({}, solto, { horario: '', hi: '23:00', hf: '01:00' });
 assert.strictEqual(Crono.calcularPainel([virada]).timeline.overall.totalHoras, 2);
+// 5) papel fora do esperado (Motorista num Aspirador): aparece e os limites são números
+const foraDoPapel = Object.assign({}, solto, { equip: 'Aspirador de Pó', vaga: 'ASP-02', kit: 'CR-0099' });
+const eq5 = Crono.calcularPainel([foraDoPapel]).timeline.crews[0];
+assert.ok(eq5.expectedRoles.includes('Motorista'), 'papel extra entra na equipe');
+assert.ok(Number.isFinite(eq5.globalMin) && Number.isFinite(eq5.globalMax), 'limites finitos');
+assert.strictEqual(eq5.completenessDen, 2, 'completude continua pela composição do equipamento');
+
+// 6) horário "__proto__" não contamina objetos
+Crono.calcularPainel([Object.assign({}, solto, { horario: '__proto__', obs: 'x' })]);
+assert.strictEqual(({}).Operador, undefined, 'Object.prototype intacto');
+assert.strictEqual(({}).Motorista, undefined, 'Object.prototype intacto');
 console.log('OK painel-calculo');

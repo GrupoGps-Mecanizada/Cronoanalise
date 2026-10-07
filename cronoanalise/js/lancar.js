@@ -1,13 +1,19 @@
 // Tela Lançar: passa uma folha preenchida para o banco, pelo ID impresso (ex.: CR-0002-OP1).
 (function (raiz) {
   const Crono = raiz.Crono;
-  const { DESC, classe, EQUIP, PAPEL_NOME, TURNOS } = Crono.config;
+  const { DESC, classe, EQUIP, PAPEL_NOME, TURNOS, SUPERVISORES } = Crono.config;
   const ID_FOLHA = /^CR-\d{4,}-(MOT|OP1|OP2)$/;
   const vazioParaNull = v => (v === '' || v == null ? null : v);
 
   function horaInicial(horario) {
     const m = /^\s*(\d{1,2})/.exec(horario || '');
     return m ? String(m[1]).padStart(2, '0') + ':00' : '';
+  }
+
+  // Turno com um supervisor só (A, B, C, D) já sugere o nome; no ADM há três, então fica em branco.
+  function supervisorDoTurno(turno) {
+    const doTurno = SUPERVISORES.filter(s => s.turno === turno);
+    return doTurno.length === 1 ? doTurno[0].nome : '';
   }
 
   // Folha + cabeçalho + linhas digitadas → registros no formato da DEMO.
@@ -20,7 +26,7 @@
         area: kit.area || null, nome: vazioParaNull(cab.nome), papel: PAPEL_NOME[folha.papel],
         placa: kit.placa || null, vaga: kit.vaga || null, equip,
         hi: l.hi, hf: l.hf, cod, desc: DESC[cod] || null, cls: classe(cod),
-        obs: vazioParaNull(l.obs), execAux: vazioParaNull(l.execAux), supervisor: null,
+        obs: vazioParaNull(l.obs), execAux: vazioParaNull(l.execAux), supervisor: vazioParaNull(cab.supervisor),
         kit: kit.codigo, folha: folha.id
       };
     });
@@ -38,7 +44,7 @@
 
   const chaveRascunho = () => 'crono_rascunho_' + atual.folha.id;
   function cabecalho() {
-    return { nome: el('lcNome').value.trim(), data: el('lcData').value, turno: el('lcTurno').value, horario: el('lcHorario').value.trim() };
+    return { nome: el('lcNome').value.trim(), data: el('lcData').value, turno: el('lcTurno').value, horario: el('lcHorario').value.trim(), supervisor: el('lcSupervisor').value };
   }
   function guardarRascunho() {
     try { localStorage.setItem(chaveRascunho(), JSON.stringify({ cab: cabecalho(), linhas })); } catch (_) { /* sem armazenamento */ }
@@ -95,6 +101,7 @@
     el('lcData').value = kit.data || '';
     el('lcTurno').value = kit.turno || '';
     el('lcHorario').value = Crono.horarioPadrao(kit.horario || '');
+    el('lcSupervisor').value = supervisorDoTurno(kit.turno || '');
     linhas = [];
     const rascunho = lerRascunho();
     if (rascunho && window.confirm('Há um rascunho desta folha neste aparelho. Continuar de onde parou?')) {
@@ -102,6 +109,7 @@
       el('lcData').value = rascunho.cab.data || el('lcData').value;
       el('lcTurno').value = rascunho.cab.turno || '';
       el('lcHorario').value = rascunho.cab.horario || el('lcHorario').value;
+      el('lcSupervisor').value = rascunho.cab.supervisor || el('lcSupervisor').value;
       linhas = rascunho.linhas || [];
     }
     if (!linhas.length) linhas.push(linhaNova());
@@ -167,6 +175,9 @@
 
   function iniciar() {
     el('lcTurno').innerHTML = '<option value="">(sem turno)</option>' + TURNOS.map(t => `<option value="${t}">${t}</option>`).join('');
+    el('lcSupervisor').innerHTML = '<option value="">(escolha)</option>' +
+      SUPERVISORES.map(s => `<option value="${Crono.esc(s.nome)}">${Crono.esc(s.nome)} – turno ${s.turno}</option>`).join('');
+    el('lcTurno').addEventListener('change', () => { if (!el('lcSupervisor').value) el('lcSupervisor').value = supervisorDoTurno(el('lcTurno').value); });
     el('lcBuscar').addEventListener('click', buscar);
     el('lcFolha').addEventListener('keydown', e => { if (e.key === 'Enter') buscar(); });
     el('lcLinhas').addEventListener('input', aoMudarLinha);
@@ -178,11 +189,11 @@
       desenharLinhas();
       guardarRascunho();
     });
-    ['lcNome', 'lcData', 'lcTurno', 'lcHorario'].forEach(id => el(id).addEventListener('change', guardarRascunho));
+    ['lcNome', 'lcData', 'lcTurno', 'lcHorario', 'lcSupervisor'].forEach(id => el(id).addEventListener('change', guardarRascunho));
     el('lcMais').addEventListener('click', () => { linhas.push(linhaNova()); desenharLinhas(); guardarRascunho(); });
     el('lcSalvar').addEventListener('click', salvar);
   }
 
-  Crono.lancar = { montarRegistros, horaInicial, iniciar };
+  Crono.lancar = { montarRegistros, horaInicial, supervisorDoTurno, iniciar };
   if (typeof module !== 'undefined') module.exports = Crono;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -296,6 +296,7 @@
         <div class="form-field"><label for="lcData">Data</label><input type="date" id="lcData"></div>
         <div class="form-field"><label for="lcTurno">Turno</label><select id="lcTurno"></select></div>
         <div class="form-field"><label for="lcHorario">Horário do turno</label><input type="text" id="lcHorario" maxlength="20" placeholder="Ex.: 07h às 17h"></div>
+        <div class="form-field"><label for="lcSupervisor">Supervisor</label><select id="lcSupervisor"></select></div>
       </div>
       <div class="card table-card mt-16">
         <table class="table">
@@ -317,7 +318,7 @@
 <div class="wrap">
   <main>
     <!-- ===================== LANÇAMENTOS ===================== -->
-    <div class="view" id="view-lancamentos">
+    <div class="view active" id="view-lancamentos">
       <div class="toolbar">
         <input type="text" id="lancSearch" class="toolbar-search" placeholder="Buscar por data, nome, vaga, equipamento…">
         <input type="date" id="edDe" title="De" aria-label="Data inicial">

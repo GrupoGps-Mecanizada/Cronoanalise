@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Teste: telas visíveis</title></head>
+<body>
+<!-- Abre cada tela do sistema num iframe e confere se o elemento principal aparece (não só se não há erro). -->
+<iframe id="f" style="width:1200px;height:900px"></iframe>
+<script>
+const TELAS = { painel: '#painelEstado', kit: '#btnGerar', lancar: '#lcFolha', editar: '#lancNewBtn' };
+const visivel = el => !!el && getComputedStyle(el).display !== 'none' && el.getClientRects().length > 0;
+(async function () {
+  const falhas = [];
+  const f = document.getElementById('f');
+  for (const [tela, seletor] of Object.entries(TELAS)) {
+    await new Promise(ok => { f.onload = ok; f.src = '../index.html?t=' + tela + Date.now() + '#' + tela; });
+    await new Promise(ok => setTimeout(ok, 800));
+    if (!visivel(f.contentDocument.querySelector(seletor))) falhas.push(tela);
+  }
+  document.title = falhas.length ? 'FALHA ' + falhas.join(',') : 'OK telas visiveis';
+})();
+</script>
+</body></html>

@@ -18,4 +18,10 @@ assert.strictEqual(Crono.horarioPadrao('07–17'), '07h às 17h');
 assert.strictEqual(Crono.horarioPadrao('19-07'), '19h às 07h');
 assert.strictEqual(Crono.horarioPadrao('07h às 17h'), '07h às 17h');
 assert.strictEqual(Crono.horarioPadrao(''), '');
+// virada da meia-noite sem horário do turno: 23:00→01:00 e depois 01:00→02:00 não se sobrepõem
+assert.deepStrictEqual(Crono.conferirLinhas([{ hi: '23:00', hf: '01:00', cod: 6 }, { hi: '01:00', hf: '02:00', cod: 32 }], { modelo: 'AP-OP', horario: '' }).bloqueios, []);
+// turno 19h às 07h com linha que começa à tarde (14:30→19:00, depois 19:00→20:00)
+assert.deepStrictEqual(Crono.conferirLinhas([{ hi: '14:30', hf: '19:00', cod: 6 }, { hi: '19:00', hf: '20:00', cod: 32 }], { modelo: 'AP-OP', horario: '19h às 07h' }).bloqueios, []);
+// madrugada inteira em sequência
+assert.deepStrictEqual(Crono.conferirLinhas([{ hi: '19:00', hf: '23:50', cod: 6 }, { hi: '23:50', hf: '00:20', cod: 32 }, { hi: '00:20', hf: '03:00', cod: 32 }], { modelo: 'AP-OP', horario: '19h às 07h' }), { bloqueios: [], avisos: [] });
 console.log('OK conferencias');

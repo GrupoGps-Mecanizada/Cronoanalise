@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Teste: largura no celular</title></head>
+<body style="margin:0">
+<!-- Abre cada tela num iframe de 390px (celular) e lista o que passa da largura da tela. -->
+<iframe id="f" style="width:390px;height:844px;border:0"></iframe>
+<script>
+(async function () {
+  const f = document.getElementById('f'), largos = [];
+  for (const tela of ['painel', 'kit', 'lancar', 'editar']) {
+    await new Promise(ok => { f.onload = ok; f.src = '../index.html?' + tela + Date.now() + '#' + tela; });
+    await new Promise(ok => setTimeout(ok, 800));
+    const d = f.contentDocument, w = d.documentElement.clientWidth;
+    if (d.documentElement.scrollWidth > w + 1) {
+      const culpados = [...d.querySelectorAll('body *')].filter(e => e.getClientRects().length && e.getBoundingClientRect().right > w + 1)
+        .filter(e => ![...e.children].some(c => c.getBoundingClientRect().right > w + 1))
+        .slice(0, 4).map(e => e.tagName.toLowerCase() + (e.id ? '#' + e.id : '') + (e.className ? '.' + String(e.className).split(' ')[0] : '') + '=' + Math.round(e.getBoundingClientRect().right));
+      largos.push(tela + '(' + d.documentElement.scrollWidth + 'px: ' + culpados.join(' ') + ')');
+    }
+  }
+  document.title = largos.length ? 'FALHA ' + largos.join(' | ') : 'OK largura celular';
+})();
+</script>
+</body></html>

@@ -20,27 +20,35 @@
     return m ? `${m[1]}h às ${m[2]}h` : (horario || '');
   };
 
-  Crono.conferirLinhas = function (linhas, { modelo, horario }) {
+  const minutos = hhmm => { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m; };
+  const DOZE_HORAS = 12 * 60;
+
+  // As linhas da folha são lidas em sequência: cada início é contado a partir do fim da linha anterior,
+  // então a virada da meia-noite (23:50 → 00:20) não depende do horário do turno.
+  Crono.conferirLinhas = function (linhas, { modelo }) {
     const bloqueios = [], avisos = [], validos = Crono.CODIGOS_DA_FOLHA[modelo];
-    const tempos = linhas.map((l, i) => {
+    let anterior = null;
+    linhas.forEach((l, i) => {
       const n = i + 1;
       if (l.cod == null || l.cod === '') bloqueios.push(`Linha ${n}: sem código.`);
       else if (validos && !validos.has(Number(l.cod))) bloqueios.push(`Linha ${n}: o código ${l.cod} não vale para esta folha.`);
       if (!HHMM.test(l.hi || '') || !HHMM.test(l.hf || '')) {
         bloqueios.push(`Linha ${n}: falta o início ou o fim.`);
-        return null;
+        return;
       }
-      const ini = Crono.minutosDoDia(l.hi, horario); let fim = Crono.minutosDoDia(l.hf, horario);
-      if (fim < ini) { if (ini >= 18 * 60 && fim + 1440 - ini <= 12 * 60) fim += 1440; else bloqueios.push(`Linha ${n}: fim antes do início.`); }
-      return { ini, fim, n };
+      let ini = minutos(l.hi);
+      if (anterior) while (ini < anterior.fim - DOZE_HORAS) ini += 1440;
+      let fim = minutos(l.hf) + (ini - minutos(l.hi));
+      if (fim < ini) fim += 1440;
+      if (fim - ini > DOZE_HORAS) { bloqueios.push(`Linha ${n}: fim antes do início.`); return; }
+      if (anterior) {
+        if (ini < anterior.fim) bloqueios.push(`Linhas ${anterior.n} e ${n}: horários se sobrepõem.`);
+        else if (ini > anterior.fim) avisos.push(`Entre a linha ${anterior.n} e a ${n} há um buraco de ${ini - anterior.fim} min.`);
+      }
+      anterior = { fim, n };
     });
-    const comHora = tempos.filter(Boolean);
-    for (let i = 1; i < comHora.length; i++) {
-      const a = comHora[i - 1], b = comHora[i];
-      if (b.ini < a.fim) bloqueios.push(`Linhas ${a.n} e ${b.n}: horários se sobrepõem.`);
-      else if (b.ini > a.fim) avisos.push(`Entre a linha ${a.n} e a ${b.n} há um buraco de ${b.ini - a.fim} min.`);
-    }
     return { bloqueios, avisos };
   };
+
   if (typeof module !== 'undefined') module.exports = Crono;
 })(typeof window !== 'undefined' ? window : globalThis);
