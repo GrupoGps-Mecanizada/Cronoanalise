@@ -276,7 +276,41 @@
 </section>
 
 <section class="tela-app" id="tela-lancar">
-<div class="wrap"><div class="estado">Em construção.</div></div>
+<div class="wrap">
+  <main>
+    <div class="card card-pad">
+      <div class="card-title">1. Qual folha?</div>
+      <div class="card-sub">Digite o código impresso no topo da folha preenchida.</div>
+      <div class="toolbar">
+        <input type="text" id="lcFolha" class="toolbar-search" maxlength="20" autocomplete="off" placeholder="Ex.: CR-0002-OP1" aria-label="ID da folha">
+        <button type="button" class="btn btn-primary" id="lcBuscar">Buscar folha</button>
+      </div>
+      <div class="lanc-note" id="lcAviso" role="status"></div>
+    </div>
+
+    <div class="card card-pad mt-16" id="lcCartao" hidden>
+      <div class="card-title" id="lcTitulo"></div>
+      <div class="card-sub" id="lcResumo"></div>
+      <div class="form-grid">
+        <div class="form-field"><label for="lcNome">Nome</label><input type="text" id="lcNome" maxlength="80"></div>
+        <div class="form-field"><label for="lcData">Data</label><input type="date" id="lcData"></div>
+        <div class="form-field"><label for="lcTurno">Turno</label><select id="lcTurno"></select></div>
+        <div class="form-field"><label for="lcHorario">Horário do turno</label><input type="text" id="lcHorario" maxlength="20" placeholder="Ex.: 07h às 17h"></div>
+      </div>
+      <div class="card table-card mt-16">
+        <table class="table">
+          <thead><tr><th>Início</th><th>Fim</th><th>Código</th><th>Atividade</th><th>E/A</th><th>Observação</th><th></th></tr></thead>
+          <tbody id="lcLinhas"></tbody>
+        </table>
+      </div>
+      <div class="toolbar mt-16">
+        <button type="button" class="btn" id="lcMais">+ linha</button>
+        <button type="button" class="btn btn-primary" id="lcSalvar">Salvar folha</button>
+      </div>
+      <div class="lanc-note" id="lcAvisoSalvar" role="status"></div>
+    </div>
+  </main>
+</div>
 </section>
 
 <section class="tela-app" id="tela-editar">
@@ -378,6 +412,7 @@
 <script src="js/banco.js"></script>
 <script src="js/painel-calculo.js"></script>
 <script src="js/painel.js"></script>
+<script src="js/conferencias.js"></script>
 <script src="js/kit.js"></script>
 <script src="js/lancar.js"></script>
 <script src="js/editar.js"></script>
