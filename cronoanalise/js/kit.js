@@ -108,29 +108,7 @@ const modeloDe = (tipo, papel) => `${tipo.toUpperCase()}-${papel === 'MOT' ? 'MO
 
 /* ===================== ID ÚNICO (Supabase) ===================== */
 // O banco cria o kit e devolve o código (CR-0001). Folha: kit + "-MOT/-OP1/-OP2".
-// Só a chave pública (publishable) vai aqui; a gravação é feita pela função crono_gerar_kit.
-const SUPABASE_URL = Crono.config.SUPABASE_URL;
-const SUPABASE_CHAVE_PUBLICA = Crono.config.SUPABASE_CHAVE;
-
-async function gerarCodigoKit(dados) {
-  let resposta;
-  try {
-    resposta = await fetch(`${SUPABASE_URL}/rest/v1/rpc/crono_gerar_kit`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', apikey: SUPABASE_CHAVE_PUBLICA },
-      body: JSON.stringify({
-        p_tipo: dados.tipo, p_equipamento_id: null, p_placa: dados.placa, p_vaga: dados.vaga,
-        p_data: dados.data || null, p_turno: dados.turno, p_horario: dados.horario, p_area: dados.area
-      })
-    });
-  } catch (_) {
-    throw new Error('Sem internet. Confira a conexão e tente de novo.');
-  }
-  if (!resposta.ok) throw new Error('O banco não conseguiu gerar o kit. Tente de novo em instantes.');
-  const kit = await resposta.json();
-  if (!kit || !kit.codigo) throw new Error('O banco respondeu sem o código do kit. Tente de novo.');
-  return kit.codigo;
-}
+const gerarCodigoKit = dados => Crono.banco.gerarKit(dados);
 
 /* ===================== HISTÓRICO LOCAL ===================== */
 function lerHistorico() {
@@ -395,6 +373,28 @@ function verPrevia() {
   document.getElementById('previaTitulo').scrollIntoView({ behavior: 'smooth' });
 }
 
+async function reimprimirPeloCodigo() {
+  const aviso = document.getElementById('avisoReimpressao');
+  const codigo = document.getElementById('codigoReimpressao').value.trim().toUpperCase();
+  if (!/^CR-\d{4,}$/.test(codigo)) {
+    aviso.className = 'aviso erro';
+    aviso.textContent = 'Digite o código do kit, como CR-0002.';
+    return;
+  }
+  try {
+    const kit = await Crono.banco.buscarKit(codigo);
+    if (!kit) { aviso.className = 'aviso erro'; aviso.textContent = 'Kit não encontrado.'; return; }
+    aviso.className = 'aviso ok';
+    aviso.textContent = `Kit ${kit.codigo} encontrado. Abrindo a impressão…`;
+    montarKit({ tipo: kit.tipo, vaga: kit.vaga || '', supervisor: '', placa: kit.placa || '', data: kit.data || '',
+                turno: kit.turno || '', horario: kit.horario || '', area: kit.area || '', codigo: kit.codigo }, false);
+    setTimeout(() => window.print(), 400);
+  } catch (erro) {
+    aviso.className = 'aviso erro';
+    aviso.textContent = erro.message;
+  }
+}
+
 function reimprimir(indice) {
   const kit = lerHistorico()[indice];
   if (!kit) return;
@@ -429,6 +429,7 @@ Crono.kit = {
     document.getElementById('supervisor').addEventListener('change', aoEscolherSupervisor);
     document.getElementById('btnGerar').addEventListener('click', gerarEImprimir);
     document.getElementById('btnPrevia').addEventListener('click', verPrevia);
+    document.getElementById('btnReimprimirCodigo').addEventListener('click', reimprimirPeloCodigo);
     document.getElementById('historico').addEventListener('click', e => {
       const b = e.target.closest('[data-reimprimir]');
       if (b) reimprimir(Number(b.dataset.reimprimir));

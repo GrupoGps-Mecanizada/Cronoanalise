@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Teste do Painel (offline)</title>
+<link rel="stylesheet" href="../css/painel.css"></head>
+<body>
+<!-- Desenha o Painel com testes/referencia.json (gerado por gerar_referencia.py), sem banco.
+     Inclui um registro com HTML malicioso: se aparecer "XSS" no console, o escape falhou. -->
+<div id="alvo"></div><div id="tip"></div>
+<script src="../js/config.js"></script>
+<script>Crono.esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));</script>
+<script src="../js/banco.js"></script>
+<script src="../js/painel-calculo.js"></script>
+<script src="../js/painel.js"></script>
+<script>
+(async function () {
+  const pagina = await (await fetch('../index.html')).text();
+  const doc = new DOMParser().parseFromString(pagina, 'text/html');
+  document.getElementById('alvo').append(doc.querySelector('header'), doc.getElementById('tela-painel'));
+  document.getElementById('tela-painel').classList.add('ativa');
+  const ref = await (await fetch('referencia.json')).json();
+  const mau = Object.assign({}, ref.registros[0], { seq: 99999, obs: '<img src=x onerror="console.error(\'XSS\')">', nome: '<b onmouseover=x>Nome</b>' });
+  const regs = ref.registros.concat([mau]).map(Crono.banco.escaparRegistro);
+  document.getElementById('painelEstado').remove();
+  Crono.painel.desenhar(Crono.calcularPainel(regs));
+  document.querySelectorAll('#topTabs .tab').forEach(b => b.click());   // abre todas as abas
+  document.querySelectorAll('#produtSubtabs .pill').forEach(b => b.click());
+  const equipes = document.querySelectorAll('.crew-item'); equipes[equipes.length - 1].click();
+  document.title = 'PRONTO ' + document.querySelectorAll('.kpi').length + ' kpis, ' + document.querySelectorAll('.crew-item').length + ' equipes';
+})().catch(e => console.error('FALHOU: ' + e.message));
+</script>
+</body></html>
