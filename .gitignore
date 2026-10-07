@@ -1,0 +1,15 @@
+# Lista branca: só sobe o que está liberado abaixo.
+# sistema (3).html, a versão DEMO, PDFs e planilhas ficam só no computador.
+/*
+!/.gitignore
+!/README.md
+!/cronoanalise/
+!/docs/
+
+# Nunca subir, mesmo dentro das pastas liberadas
+.env
+*.env
+*.xlsx
+*.xls
+*.csv
+*.pdf
