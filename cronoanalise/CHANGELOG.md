@@ -1,8 +1,11 @@
 # CHANGELOG – Cronoanálise
 
+## v0.2.1 (2026-10-07)
+- Sem faixa de "versão de teste" e sem marcar dados como fictícios: pronto para os dados reais.
+- Teste automático do banco ao vivo (`testes/banco-ao-vivo.html`): grava, lê, altera e apaga uma linha de teste.
+
 ## v0.2.0 (2026-10-07)
 - Correções da revisão: tela Editar aparecia em branco; Painel travava com papel fora da composição (ex.: Motorista no Aspirador); supervisor passa a ser gravado no Lançar; turno 23h às 07h entra no gráfico por horário; erro no desenho não deixa mais a tela branca; menu legível no modo escuro; Editar cabe no celular; conferência de horários lê a virada da meia-noite em sequência.
-- Sem faixa de "versão de teste" e sem marcar dados como fictícios: pronto para os dados reais.
 - Um sistema só, com o visual do SGE da DEMO e 4 telas no menu: **Painel**, **Novo documento**, **Lançar** e **Editar**.
 - Painel: as abas do sistema (3) (Dashboard, Timeline por equipe, Produtividade, Equipamentos), calculadas no navegador a partir do banco.
 - Novo documento: o gerador de kit de antes, mais "reimprimir pelo código" (CR-0002) de qualquer computador.
