@@ -1,5 +1,12 @@
 # CHANGELOG – Cronoanálise
 
+## v0.6.0 (2026-10-14)
+- **Visual do SST**: barra escura com logo do SGE, menu por assunto (*Painel*: Dashboard, Linha do tempo, Produtividade, Equipamentos; *Folhas*: Novo documento, Lançar, Editar) com submenus explicados, botão de tema claro/escuro. No celular: cabeçalho "Seção › Tela", gaveta lateral e barra inferior. Cores, fonte (Inter), cantos e sombras do SST.
+- **Mudou para o Cloudflare Pages** (projeto `sge-cronoanalise`, conta sistemagestaoempresa), em `/cronoanalise/`, com cabeçalhos de segurança. Publicar: `node scripts/publicar-cloudflare.mjs`.
+- **Entra no Portal SGE** (`sge-portal.pages.dev/cronoanalise/`): dentro do portal a barra da Cronoanálise substitui a do portal e o logo volta ao início. Cadastro na Central: `sql/2026-10-14_004_portal_cronoanalise.sql`.
+- O endereço antigo (GitHub Pages) mostra só o aviso "mudou de endereço" com o botão para o Portal.
+- Endereços das telas: `#dashboard`, `#timeline`, `#produtividade`, `#equipamentos`, `#kit`, `#lancar`, `#editar` (o antigo `#painel` abre o Dashboard).
+
 ## v0.5.0 (2026-10-14)
 - **Dashboard global novo**: os 4 cartões de número saíram. Agora há gráficos que se filtram entre si:
   - barra de filtros no topo (período, equipamento, turno, supervisor, Motorista/Operador) com etiquetas para tirar cada filtro;

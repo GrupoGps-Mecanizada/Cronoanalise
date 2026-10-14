@@ -346,10 +346,10 @@
     el('dbRankingMais').addEventListener('click', () => { rankingTodas = !rankingTodas; desenharRanking(D.filtrar(todos, filtros)); });
     let espera;
     window.addEventListener('resize', () => { clearTimeout(espera); espera = setTimeout(() => desenharDias(D.filtrar(todos, filtros)), 150); });
-    // A aba do Dashboard pode abrir escondida: a linha do tempo dos dias se redesenha quando a aba aparece.
-    document.querySelector('#topTabs [data-view="dashboard"]').addEventListener('click', () => setTimeout(() => desenharDias(D.filtrar(todos, filtros)), 0));
     desenharTudo();
   }
 
   Crono.dashboard.desenhar = desenhar;
+  // Chamado pelo menu (aba aparecendo) e pela troca de tema: o gráfico dos dias depende da largura e das cores.
+  Crono.dashboard.redesenhar = () => { if (todos.length) desenharDias(D.filtrar(todos, filtros)); };
 })();

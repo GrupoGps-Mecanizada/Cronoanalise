@@ -11,10 +11,16 @@ Sistema da cronoanálise das equipes (Alta Pressão, Auto Vácuo, Hiper Vácuo e
 | **Editar** | Busca, corrige e exclui linhas já lançadas |
 
 ## Como usar
-1. Abra o endereço do GitHub Pages (ou `index.html` por um servidor local).
+1. Abra pelo Portal SGE: https://sge-portal.pages.dev/cronoanalise/ (ou `index.html` por um servidor local: `python -m http.server 8765` nesta pasta e abra http://localhost:8765/). O endereço antigo do GitHub Pages só mostra o aviso de mudança.
 2. **Novo documento** → escolha equipamento, vaga e supervisor → **Gerar kit e imprimir**.
 3. Com a folha preenchida: **Lançar** → digite o ID da folha → nome e linhas (início, fim, código) → **Salvar folha**.
 4. O **Painel** mostra o resultado. Correções no **Editar**.
+
+## Como publicar (Cloudflare Pages, igual ao SST)
+1. Na pasta `cronoanalise`, rode `node scripts/publicar-cloudflare.mjs` (projeto `sge-cronoanalise`, conta sistemagestaoempresa).
+2. Se pedir login: `npx wrangler login` no PowerShell e entre com a conta sistemagestaoempresas@gmail.com.
+3. O Portal repassa `/cronoanalise/` para `sge-cronoanalise.pages.dev` (lista `EXCECOES` em `sge-portal/public/js/config.js`).
+4. Salve também no GitHub (`git push`): é a cópia do código. O GitHub Pages ficou só com o aviso de mudança.
 
 ## Banco (Supabase, projeto PRODUTIVIDADE)
 - `crono_kits`, `crono_folhas` (função `crono_gerar_kit`) e `crono_registros` (lançamentos, formato da DEMO). RLS ligado em todas.

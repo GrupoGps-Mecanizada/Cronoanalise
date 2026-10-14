@@ -15,7 +15,7 @@
 }
 
 /* filtros */
-.db-filtros{display:flex; flex-wrap:wrap; align-items:center; gap:10px; padding:12px 14px; position:sticky; top:0; z-index:5;}
+.db-filtros{display:flex; flex-wrap:wrap; align-items:center; gap:10px; padding:12px 14px; position:sticky; top:70px; z-index:5;}
 .db-filtros select, .db-filtros input{font:inherit; font-size:13px; color:var(--text); background:var(--surface-2); border:1px solid var(--border); border-radius:8px; padding:7px 9px; min-height:36px;}
 .db-campo{display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:var(--text-2);}
 .db-filtros .pills{margin:0;}

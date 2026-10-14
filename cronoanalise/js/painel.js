@@ -431,7 +431,7 @@ function desenhar(ALL) {
   Crono.painel.abrirEquipe = function(chave){
     var i = DATA.crews.findIndex(function(c){ return (c.kit || [c.data,c.vaga,c.turno,c.horario,c.equip].join('|')) === chave; });
     if (i < 0) return false;
-    document.querySelector('#topTabs [data-view="timeline"]').click();
+    Crono.app.ir('timeline');
     dateClearBtn.click();
     select(i);
     var ativo = list.querySelector('.crew-item.active');
