@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/painel.css">
 <link rel="stylesheet" href="css/kit.css">
+<link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -54,16 +55,105 @@
 
     <!-- ===================== DASHBOARD ===================== -->
     <div class="view active" id="view-dashboard">
-      <div class="kpi-grid" id="kpiRow"></div>
-
-      <div class="card card-pad mt-24">
-        <div class="card-title">Motorista × Operador</div>
-        <div class="mini-compare" id="miniCompare"></div>
+      <div class="card db-filtros" id="dbFiltros">
+        <label class="db-campo">De <input type="date" id="dbDe"></label>
+        <label class="db-campo">Até <input type="date" id="dbAte"></label>
+        <select id="dbEquip" aria-label="Equipamento"></select>
+        <select id="dbTurno" aria-label="Turno"></select>
+        <select id="dbSupervisor" aria-label="Supervisor"></select>
+        <div class="pills" id="dbPapel" role="group" aria-label="Papel">
+          <button type="button" class="pill active" data-papel="">Todos</button>
+          <button type="button" class="pill" data-papel="Motorista">Motorista</button>
+          <button type="button" class="pill" data-papel="Operador">Operador</button>
+        </div>
+        <button type="button" class="db-link" id="dbLimpar" hidden>Limpar filtros</button>
       </div>
+      <div class="db-chips" id="dbChips"></div>
 
-      <div class="card card-pad mt-16">
-        <div class="card-title">Cobertura de cronoanálise por equipamento</div>
-        <div id="coverageBars"></div>
+      <div id="dbConteudo">
+        <div class="card card-pad db-destaque">
+          <div id="dbNumero"></div>
+          <div class="db-destaque-graf">
+            <div class="db-card-head">
+              <div><div class="card-title">Para onde vai o tempo</div>
+              <div class="card-sub">Clique numa cor para filtrar todo o painel.</div></div>
+              <button type="button" class="db-link" data-alterna aria-pressed="false">Ver tabela</button>
+            </div>
+            <div class="db-legenda" id="dbLegendaCls"></div>
+            <div class="db-grafico" id="dbTempo"></div>
+            <div class="db-tabela-wrap" id="dbTempoTabela"></div>
+          </div>
+        </div>
+
+        <div class="db-grid db-grid-21 mt-16">
+          <div class="card card-pad">
+            <div class="db-card-head">
+              <div><div class="card-title">Evolução dia a dia</div>
+              <div class="card-sub">% do tempo produzindo em cada dia. Passe o mouse para ver os números; clique num dia para filtrar.</div></div>
+              <button type="button" class="db-link" data-alterna aria-pressed="false">Ver tabela</button>
+            </div>
+            <div class="db-legenda" id="dbDiasLegenda"></div>
+            <div class="db-grafico" id="dbDias"></div>
+            <div class="db-tabela-wrap" id="dbDiasTabela"></div>
+          </div>
+          <div class="card card-pad">
+            <div class="card-title">Leitura automática</div>
+            <div class="card-sub">O que os números deste filtro mostram.</div>
+            <ul class="db-achados" id="dbAchados"></ul>
+          </div>
+        </div>
+
+        <div class="card card-pad mt-16">
+          <div class="db-card-head">
+            <div><div class="card-title">Produtividade por hora do turno</div>
+            <div class="card-sub">Cada quadrado é uma hora do relógio: quanto mais forte a cor, mais tempo produzindo. Mostra em que horário a equipe mais espera.</div></div>
+            <button type="button" class="db-link" data-alterna aria-pressed="false">Ver tabela</button>
+          </div>
+          <div class="db-grafico db-rolagem" id="dbHoras"></div>
+          <div class="db-legenda db-legenda-seq db-grafico" id="dbHorasLegenda"></div>
+          <div class="db-tabela-wrap" id="dbHorasTabela"></div>
+        </div>
+
+        <div class="db-grid mt-16">
+          <div class="card card-pad">
+            <div class="db-card-head">
+              <div><div class="card-title">As 10 atividades que mais consomem horas</div>
+              <div class="card-sub">A cor mostra a classificação. Clique numa atividade para ver as observações dela.</div></div>
+              <button type="button" class="db-link" data-alterna aria-pressed="false">Ver tabela</button>
+            </div>
+            <div class="db-legenda" id="dbAtivLegenda"></div>
+            <div class="db-grafico" id="dbAtiv"></div>
+            <div class="db-tabela-wrap" id="dbAtivTabela"></div>
+          </div>
+          <div class="card card-pad">
+            <div class="card-title" id="dbObsTitulo">Observações</div>
+            <div class="card-sub">Comentários escritos nas folhas, do filtro atual.</div>
+            <ul class="db-obs" id="dbObs"></ul>
+          </div>
+        </div>
+
+        <div class="db-grid mt-16">
+          <div class="card card-pad">
+            <div class="db-card-head">
+              <div><div class="card-title">Motorista × Operador por equipamento</div>
+              <div class="card-sub">% do tempo produzindo de cada papel. Clique para filtrar o equipamento.</div></div>
+              <button type="button" class="db-link" data-alterna aria-pressed="false">Ver tabela</button>
+            </div>
+            <div class="db-legenda" id="dbEquipLegenda"></div>
+            <div class="db-grafico" id="dbEquipamentos"></div>
+            <div class="db-tabela-wrap" id="dbEquipTabela"></div>
+          </div>
+          <div class="card card-pad">
+            <div class="db-card-head">
+              <div><div class="card-title">Ranking das equipes</div>
+              <div class="card-sub">Da mais para a menos produtiva. Clique para abrir a linha do tempo da equipe.</div></div>
+              <button type="button" class="db-link" data-alterna aria-pressed="false">Ver tabela</button>
+            </div>
+            <div class="db-grafico" id="dbRanking"></div>
+            <button type="button" class="db-link db-grafico" id="dbRankingMais" hidden></button>
+            <div class="db-tabela-wrap" id="dbRankingTabela"></div>
+          </div>
+        </div>
       </div>
 
       <details class="explain mt-16">
@@ -107,20 +197,22 @@
               <div><h2 class="card-title" id="crewTitle" style="margin-bottom:2px;"></h2><div class="card-sub" id="crewMeta" style="margin-bottom:0;"></div></div>
               <div class="tl-acoes">
                 <div class="pills" id="tlModo" role="group" aria-label="Modo da linha do tempo">
-                  <button type="button" class="pill active" data-modo="cls">Produtividade</button>
-                  <button type="button" class="pill" data-modo="grupo">Atividades</button>
+                  <button type="button" class="pill active" data-modo="simples">Simples</button>
+                  <button type="button" class="pill" data-modo="produtividade">Produtividade</button>
+                  <button type="button" class="pill" data-modo="detalhado">Detalhado</button>
                 </div>
                 <span class="status-note" id="crewStatus"></span>
               </div>
             </div>
+            <div class="placar" id="placar"></div>
             <div class="tl-wrap"><div class="tl-inner" id="tlInner"></div></div>
-            <div class="legend-row" id="legendaCls">
+            <div class="legend-row" id="legendaCls" hidden>
               <span><span class="dot" style="background:var(--good)"></span>Produzindo</span>
               <span><span class="dot" style="background:var(--warn)"></span>Improdutivo necessário</span>
               <span><span class="dot" style="background:var(--bad)"></span>Improdutivo</span>
               <span><span class="dot" style="background:var(--text-3)"></span>Não classificado</span>
             </div>
-            <div class="legend-row" id="legendaGrupo" hidden></div>
+            <div class="legend-row" id="legendaGrupo"></div>
           </div>
           <div class="card card-pad">
             <div class="card-title">Resumo da equipe</div>
@@ -435,6 +527,8 @@
 <script src="js/config.js"></script>
 <script src="js/banco.js"></script>
 <script src="js/painel-calculo.js"></script>
+<script src="js/dashboard-calculo.js"></script>
+<script src="js/dashboard.js"></script>
 <script src="js/painel.js"></script>
 <script src="js/conferencias.js"></script>
 <script src="js/resumo.js"></script>

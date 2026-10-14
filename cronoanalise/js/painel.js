@@ -42,29 +42,7 @@ function desenhar(ALL) {
     });
   });
 
-  // ================= DASHBOARD =================
-  var o = DATA.overall;
-  var pctv = function(cls){ return o.totalHoras ? (100*(o.porClassificacao[cls]||0)/o.totalHoras) : 0; };
-  var kpis = [
-    [fmtH(o.totalHoras), 'Horas registradas'],
-    [o.totalRegistros, 'Lançamentos na base'],
-    [pctv('Produzindo').toFixed(0)+'%', 'Tempo produzindo (geral)'],
-    [o.crewsCompletos+' / '+o.totalCrews, 'Equipes com comparação completa']
-  ];
-  var kr = document.getElementById('kpiRow');
-  kpis.forEach(function(k){
-    var d = document.createElement('div'); d.className='kpi';
-    d.innerHTML = '<div class="kpi-label">'+k[1]+'</div><div class="kpi-value">'+k[0]+'</div>';
-    kr.appendChild(d);
-  });
-
-  var ovr = CH.overallRole;
-  document.getElementById('miniCompare').innerHTML =
-    '<div class="mc-item"><div class="mc-role"><span class="sw" style="background:var(--s-motorista)"></span>Motorista</div>'+
-      '<div class="mc-pct">'+pctstr(ovr.Motorista.pctProd)+'</div><div class="mc-hrs">produzindo de '+fmtH(ovr.Motorista.totalH)+' registradas</div></div>'+
-    '<div class="mc-item"><div class="mc-role"><span class="sw" style="background:var(--s-operador)"></span>Operador</div>'+
-      '<div class="mc-pct">'+pctstr(ovr.Operador.pctProd)+'</div><div class="mc-hrs">produzindo de '+fmtH(ovr.Operador.totalH)+' registradas</div></div>';
-
+  // ================= COMO A LÓGICA FUNCIONA (aba Dashboard) =================
   var rtb = document.getElementById('roleTableBody');
   var EQUIP_ORDER = ['alta_pressao','auto_vacuo','hiper_vacuo','aspirador'];
   var ROLE_LABEL = {alta_pressao:['Motorista','Operador 1','Operador 2'], auto_vacuo:['Motorista','Operador 1'], hiper_vacuo:['Motorista','Operador 1','Operador 2'], aspirador:['Operador 1','Operador 2']};
@@ -74,22 +52,6 @@ function desenhar(ALL) {
     var chips = ROLE_LABEL[k].map(function(r){return '<span class="role-chip">'+r+'</span>';}).join('');
     tr.innerHTML = '<td style="font-weight:700;">'+cfg.label+(k==='aspirador'?' <span class="badge badge-brand" style="margin-left:6px;">10 vagas</span>':'')+'</td><td>'+cfg.slots+'</td><td>'+chips+'</td>';
     rtb.appendChild(tr);
-  });
-
-  // coverage bars
-  var covWrap = document.getElementById('coverageBars');
-  EQUIP_ORDER.forEach(function(k){
-    var cfg = CH.equip[k];
-    var withData = Object.keys(cfg.vagas).filter(function(vk){
-      var v = cfg.vagas[vk];
-      return Object.keys(v.roles||{}).some(function(role){ return v.roles[role].totalH>0; });
-    }).length;
-    var pct = cfg.slots ? (100*withData/cfg.slots) : 0;
-    var row = document.createElement('div');
-    row.style.marginBottom='12px';
-    row.innerHTML = '<div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px;"><span style="font-weight:700;">'+cfg.label+'</span><span style="color:var(--text-2);">'+withData+' de '+cfg.slots+' vagas</span></div>'+
-      '<div style="height:10px;border-radius:6px;background:var(--nodata-soft);overflow:hidden;"><div style="height:100%;width:'+pct+'%;background:var(--brand);border-radius:6px;"></div></div>';
-    covWrap.appendChild(row);
   });
 
   // ================= TIMELINE (same behaviour as before) =================
@@ -213,24 +175,26 @@ function desenhar(ALL) {
       (c.area||'Área não informada') + ' · Turno ' + (c.turno||'—') + ' (' + (c.horario||'—') + ') · Vaga/Placa ' + (c.vaga||c.placa||'—');
     var st = document.getElementById('crewStatus');
     var full = c.completenessNum>=2;
-    st.textContent = full ? 'Comparação completa' : 'Cronoanálise parcial';
+    st.textContent = full ? 'Comparação completa' : 'Cronoálise parcial';
     st.className = 'status-note ' + (full?'full':'partial');
+
+    renderPlacar(c);   /* placar individual - só aparece no modo Simples */
 
     var inner = document.getElementById('tlInner'); inner.innerHTML='';
     var gmin=c.globalMin, gmax=c.globalMax;
-    if (gmin==null || !isFinite(gmin) || !isFinite(gmax)){ gmin=0; gmax=1440; }  // equipe sem segmentos não pode travar o laço das marcas
+    if (gmin==null || !isFinite(gmin) || !isFinite(gmax)){ gmin=0; gmax=1440; }
     if (gmax<=gmin) gmax = gmin+60;
     var span = gmax-gmin;
 
+    /* Régua de hora em hora */
     var axis = document.createElement('div'); axis.className='tl-axis';
     var spacer = document.createElement('div');
     var ticks = document.createElement('div'); ticks.className='ticks';
-    var stepMin = span>600?120:60;
-    var firstTick = Math.ceil(gmin/stepMin)*stepMin;
-    for (var t=firstTick; t<=gmax; t+=stepMin){
+    var firstTick = Math.ceil(gmin/60)*60;
+    for (var t=firstTick; t<=gmax; t+=60){
       var p2 = (t-gmin)/span*100;
       var el = document.createElement('div'); el.className='tick'; el.style.left=p2+'%';
-      el.textContent = fmtHM(t).split(' ')[0];
+      el.textContent = String(Math.floor(t/60)%24).padStart(2,'0')+'h';
       ticks.appendChild(el);
     }
     axis.appendChild(spacer); axis.appendChild(ticks); inner.appendChild(axis);
@@ -244,34 +208,70 @@ function desenhar(ALL) {
         (rd.nome ? '<span class="nome">'+rd.nome+'</span>' : '<span class="nome">—</span>')+
         (rd.segments.length ? '<span class="hrs">'+fmtH(totalH)+'</span>' : '');
       lane.appendChild(label);
+
       if (!rd.segments.length){
         var empty = document.createElement('div'); empty.className='lane-empty';
-        empty.textContent = 'Sem cronoanálise registrada para este papel';
+        empty.textContent = 'Sem cronoálise registrada para este papel';
         lane.appendChild(empty);
       } else {
         var track = document.createElement('div'); track.className='lane-track';
-        rd.segments.forEach(function(seg){
-          if (seg.startMin==null) return;
-          var left=(seg.startMin-gmin)/span*100, width=Math.max((seg.endMin-seg.startMin)/span*100,0.3);
-          var s = document.createElement('div'); var ck = CLS_KEY[seg.cls]||'unk';
-          var grupo = Crono.config.grupoDe(seg.cod);
-          if (modoTl === 'grupo') {
-            s.className = 'seg seg-grupo'; s.style.background = grupo.cor;
-            s.textContent = seg.cod != null ? seg.cod : '';
-          } else {
-            s.className = 'seg '+ck;
-          }
-          s.style.left=left+'%'; s.style.width=width+'%';
-          s.addEventListener('mousemove', function(e){
-            var clsVar = CLS_VAR[seg.cls]||'--text-3';
-            showTip(e, '<b>'+(seg.desc||'Não classificado')+'</b>'+fmtHM(seg.startMin)+' – '+fmtHM(seg.endMin)+
-              '<br><span style="opacity:.85">Código '+(seg.cod!=null?seg.cod:'—')+' · '+grupo.nome+'</span>'+
-              (seg.obs?'<br><span style="opacity:.8">'+(seg.obs||'')+'</span>':'')+
-              '<div class="cls-tag" style="background:var('+clsVar+');color:#fff">'+(seg.cls||'Não classificado')+'</div>');
+
+        if (modoTl === 'simples'){
+          /* Modo Simples: agrupa atividades do mesmo tipo num bloco grande */
+          Crono.blocosSimples(rd.segments).forEach(function(b){
+            var left  = (b.startMin-gmin)/span*100;
+            var width = Math.max((b.endMin-b.startMin)/span*100, 0.8);
+            var dur   = (b.endMin-b.startMin)/60;
+            var s = document.createElement('div');
+            s.className = 'seg seg-bloco';
+            s.style.left       = left+'%';
+            s.style.width      = width+'%';
+            s.style.background = b.grupo.cor;
+            if (b.endMin-b.startMin >= 35){
+              s.innerHTML = '<span class="bloco-rot">'+b.grupo.rotulo+'</span>'+
+                            '<small class="bloco-dur">'+fmtHoras(dur)+'</small>';
+            }
+            s.addEventListener('mousemove', function(e){
+              showTip(e,
+                '<b>'+b.grupo.rotulo+' - '+fmtHoras(dur)+'</b>'+fmtHM(b.startMin)+' - '+fmtHM(b.endMin)+
+                '<div style="margin-top:6px;opacity:.85;font-size:12px">'+
+                b.itens.slice(0,6).map(function(it){
+                  return fmtHM(it.startMin).split(' ')[0]+' '+(it.cod!=null?it.cod+' - ':'')+it.desc;
+                }).join('<br>')+(b.itens.length>6?'<br>...':'')+
+                '</div>');
+            });
+            s.addEventListener('mouseleave', hideTip);
+            track.appendChild(s);
           });
-          s.addEventListener('mouseleave', hideTip);
-          track.appendChild(s);
-        });
+
+        } else {
+          /* Modos Produtividade e Detalhado: uma faixa fina por segmento */
+          rd.segments.forEach(function(seg){
+            if (seg.startMin==null) return;
+            var left  = (seg.startMin-gmin)/span*100;
+            var width = Math.max((seg.endMin-seg.startMin)/span*100, 0.3);
+            var s = document.createElement('div');
+            var grupo = Crono.config.grupoDe(seg.cod);
+
+            if (modoTl === 'detalhado'){
+              s.className = 'seg seg-grupo'; s.style.background = grupo.cor;
+              s.textContent = seg.cod != null ? seg.cod : '';
+            } else {
+              s.className = 'seg '+(CLS_KEY[seg.cls]||'unk');
+            }
+            s.style.left=left+'%'; s.style.width=width+'%';
+            s.addEventListener('mousemove', function(e){
+              var clsVar = CLS_VAR[seg.cls]||'--text-3';
+              showTip(e, '<b>'+(seg.desc||'Não classificado')+'</b>'+fmtHM(seg.startMin)+' - '+fmtHM(seg.endMin)+
+                '<br><span style="opacity:.85">Código '+(seg.cod!=null?seg.cod:'—')+' - '+grupo.nome+'</span>'+
+                (seg.obs?'<br><span style="opacity:.8">'+(seg.obs||'')+'</span>':'')+
+                '<div class="cls-tag" style="background:var('+clsVar+');color:#fff">'+(seg.cls||'Não classificado')+'</div>');
+            });
+            s.addEventListener('mouseleave', hideTip);
+            track.appendChild(s);
+          });
+        }
+
         lane.appendChild(track);
       }
       inner.appendChild(lane);
@@ -333,24 +333,63 @@ function desenhar(ALL) {
     });
   }
 
-  // ---------- modo da linha do tempo: Produtividade (3 classes) ou Atividades (grupo + código) ----------
-  var modoTl = 'cls';
+  // =================== MODOS DA LINHA DO TEMPO ===================
+  // Simples      : placar por pessoa + blocos grandes (padrão, para leigos)
+  // Produtividade: 3 cores (Produzindo / Improdutivo necessário / Improdutivo)
+  // Detalhado    : cor do grupo + número do código em cada faixa
+  var modoTl = 'simples';
   var GRUPOS_LEG = Crono.config.GRUPOS;
-  document.getElementById('legendaGrupo').innerHTML = GRUPOS_LEG.map(function(g){
-    return '<span><span class="dot" style="background:'+g.cor+'"></span>'+g.nome+'</span>';
-  }).join('');
-  document.querySelectorAll('#tlModo .pill').forEach(function(b){
-    b.addEventListener('click', function(){
+
+  function fmtHoras(h) {
+    var m = Math.round(h * 60);
+    return Math.floor(m / 60) + 'h' + (m % 60 < 10 ? '0' : '') + (m % 60);
+  }
+
+  function desenharLegenda() {
+    var legCls   = document.getElementById('legendaCls');
+    var legGrupo = document.getElementById('legendaGrupo');
+    if (!legCls || !legGrupo) return;
+    legCls.hidden   = (modoTl !== 'produtividade');
+    legGrupo.hidden = (modoTl === 'produtividade');
+    legGrupo.innerHTML = GRUPOS_LEG.map(function(g) {
+      var rot = modoTl === 'simples' ? g.rotulo : g.nome;
+      return '<span><span class="dot" style="background:' + g.cor + '"></span>' + rot + '</span>';
+    }).join('');
+  }
+  desenharLegenda();
+
+  // Placar por pessoa — fica acima das faixas, visível só no modo Simples.
+  function renderPlacar(c) {
+    var alvo = document.getElementById('placar');
+    if (!alvo) return;
+    var res = Crono.resumoEquipe(c);
+    if (modoTl !== 'simples' || !res.papeis.length) { alvo.innerHTML = ''; return; }
+    alvo.innerHTML = res.papeis.map(function(p) {
+      var cor = Crono.corDoPlacar(p.pctProd);
+      var pctTxt = p.pctProd == null ? '—' : p.pctProd.toFixed(0) + '%';
+      return '<div class="placar-item placar-' + cor + '">' +
+        '<div class="placar-quem"><b>' + (p.nome || p.papel) + '</b><span>' + p.papel + '</span></div>' +
+        '<div class="placar-pct">' + pctTxt + '</div>' +
+        '<div class="placar-txt">Trabalhou <b>' + fmtHoras(p.porGrupo.operacao) + '</b> de ' + fmtHoras(p.total) + '</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  document.querySelectorAll('#tlModo .pill').forEach(function(b) {
+    b.addEventListener('click', function() {
       modoTl = b.dataset.modo;
-      document.querySelectorAll('#tlModo .pill').forEach(function(x){ x.classList.toggle('active', x===b); });
-      document.getElementById('legendaCls').hidden = modoTl !== 'cls';
-      document.getElementById('legendaGrupo').hidden = modoTl !== 'grupo';
-      renderTimeline(DATA.crews[current]);
+      document.querySelectorAll('#tlModo .pill').forEach(function(x) {
+        x.classList.toggle('active', x === b);
+      });
+      desenharLegenda();
+      if (DATA && DATA.crews) {
+        renderPlacar(DATA.crews[current]);
+        renderTimeline(DATA.crews[current]);
+      }
     });
   });
 
-  // ---------- Resumo da equipe ----------
-  function fmtHoras(h){ var m = Math.round(h*60); return Math.floor(m/60)+'h'+(m%60<10?'0':'')+(m%60); }
+  /* fmtHoras: definida em renderTimeline acima */
   function renderResumo(c){
     var res = Crono.resumoEquipe(c);
     var alvo = document.getElementById('resumoEquipe');
@@ -387,6 +426,18 @@ function desenhar(ALL) {
   function select(i){ current=i; markActive(); var c=DATA.crews[i]; renderTimeline(c); renderResumo(c); renderCompare(c); renderObs(c); }
   renderCrewList();
   select(current);
+
+  // Usado pelo Dashboard: abre a linha do tempo de uma equipe (kit, ou data|vaga|turno|horário|equipamento na planilha antiga).
+  Crono.painel.abrirEquipe = function(chave){
+    var i = DATA.crews.findIndex(function(c){ return (c.kit || [c.data,c.vaga,c.turno,c.horario,c.equip].join('|')) === chave; });
+    if (i < 0) return false;
+    document.querySelector('#topTabs [data-view="timeline"]').click();
+    dateClearBtn.click();
+    select(i);
+    var ativo = list.querySelector('.crew-item.active');
+    if (ativo) ativo.scrollIntoView({block:'nearest'});
+    return true;
+  };
 
   // ================= PRODUTIVIDADE SUBTABS =================
   var subBtns = document.querySelectorAll('#produtSubtabs .pill');
@@ -707,6 +758,7 @@ Crono.painel = {
       const regs = (await Crono.banco.listarRegistros()).map(Crono.banco.escaparRegistro);
       if (!regs.length) { estado.textContent = 'Ainda não há lançamentos neste período.'; return; }
       desenhar(Crono.calcularPainel(regs));
+      Crono.dashboard.desenhar(regs);
       estado.remove();   // só depois de desenhar: se der erro, a mensagem continua na tela
     } catch (e) {
       estado.innerHTML = Crono.esc(e.message) + ' <button type="button" class="btn" onclick="location.reload()">Tentar de novo</button>';

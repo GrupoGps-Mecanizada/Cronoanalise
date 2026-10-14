@@ -16,3 +16,7 @@
 *.pdf
 cronoanalise/testes/referencia.json
 __pycache__/
+
+# Página antiga com nomes completos da planilha: só no computador (decisão do dono, 14/10/2026)
+cronoanalise/antigo/
+cronoanalise/*.code-workspace

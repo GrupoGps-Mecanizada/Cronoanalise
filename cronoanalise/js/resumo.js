@@ -41,6 +41,30 @@
     return { papeis, maiorPerda, alertas };
   }
 
+  // Junta atividades seguidas do mesmo grupo num bloco só (visão Simples da linha do tempo).
+  function blocosSimples(segmentos) {
+    const blocos = [];
+    segmentos.filter(s => s.startMin != null).forEach(s => {
+      const grupo = grupoDe(s.cod);
+      const ultimo = blocos[blocos.length - 1];
+      if (ultimo && ultimo.grupo.chave === grupo.chave && s.startMin <= ultimo.endMin) {
+        ultimo.endMin = Math.max(ultimo.endMin, s.endMin);
+        ultimo.itens.push(s);
+      } else {
+        blocos.push({ grupo, startMin: s.startMin, endMin: s.endMin, itens: [s] });
+      }
+    });
+    return blocos;
+  }
+
+  // Semáforo do placar: verde ≥ 50 %, amarelo ≥ 30 %, vermelho < 30 %, neutro sem dados.
+  function corDoPlacar(pct) {
+    if (pct == null) return 'neutro';
+    return pct >= 50 ? 'verde' : pct >= 30 ? 'amarelo' : 'vermelho';
+  }
+
   Crono.resumoEquipe = resumoEquipe;
+  Crono.blocosSimples = blocosSimples;
+  Crono.corDoPlacar   = corDoPlacar;
   if (typeof module !== 'undefined') module.exports = Crono;
 })(typeof window !== 'undefined' ? window : globalThis);

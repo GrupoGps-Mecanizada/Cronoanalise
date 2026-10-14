@@ -1,5 +1,18 @@
 # CHANGELOG – Cronoanálise
 
+## v0.5.0 (2026-10-14)
+- **Dashboard global novo**: os 4 cartões de número saíram. Agora há gráficos que se filtram entre si:
+  - barra de filtros no topo (período, equipamento, turno, supervisor, Motorista/Operador) com etiquetas para tirar cada filtro;
+  - **Para onde vai o tempo** (Geral, Motorista, Operador): clicar numa cor filtra o painel todo;
+  - **Evolução dia a dia** (% produzindo) com mira e dica; clicar num dia filtra o dia;
+  - **Leitura automática**: maior perda, hora com mais espera, Motorista x Operador, melhor e pior equipe, horas sem código;
+  - **Produtividade por hora do turno** (mapa de calor de 24 horas);
+  - **As 10 atividades que mais consomem horas**: clicar mostra as **observações** daquela atividade;
+  - **Motorista x Operador por equipamento** e **Ranking das equipes** (clique abre a linha do tempo da equipe).
+- Todo gráfico tem "Ver tabela". Cores conferidas para daltonismo no modo claro e no escuro. Funciona no celular.
+- Linha do tempo ganha o modo **Simples** (blocos grandes por grupo de atividade e placar por pessoa).
+- Cálculos em `js/dashboard-calculo.js`, com teste `testes/dashboard-calculo.test.js`.
+
 ## v0.4.1 (2026-10-07)
 - Desfeita a v0.4.0 a pedido do dono: a linha do tempo volta ao formato da v0.3.0 (Produtividade / Atividades).
 - Mantida no banco a coluna `origem` (`sql/2026-10-07_003_crono_origem.sql`, já aplicada); o código não a usa.
